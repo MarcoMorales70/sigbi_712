@@ -1,0 +1,25 @@
+/* Contenedor principal del main */
+.main {
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    /* Ajusta según el tamaño de tu header y footer */
+    background-color: #fafafa;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Contenedor que divide menú lateral y contenido */
+.contenedor-main {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+/* Contenido principal a la derecha */
+.contenido {
+    flex: 1;
+    background-color: white;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}

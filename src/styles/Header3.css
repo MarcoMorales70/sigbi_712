@@ -1,0 +1,13 @@
+.header3 {
+    display: grid;
+    grid-template-columns: auto 1fr 2fr;
+    align-items: center;
+    gap: 10px;
+    background-color: #002f2a;
+    color: #e6d194;
+    padding: 8px;
+}
+
+.header3 h2 {
+    margin: 0;
+}

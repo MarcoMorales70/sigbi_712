@@ -1,0 +1,47 @@
+.menu-lateral {
+    width: 220px;
+    background-color: #f4f4f4;
+    padding: 15px;
+    border-right: 1px solid #ccc;
+    height: 100%;
+}
+
+.menu-lateral ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    padding: 10px;
+    cursor: pointer;
+    position: relative;
+    font-weight: bold;
+}
+
+.menu-item:hover {
+    background-color: #e0e0e0;
+}
+
+/* Submenú oculto por defecto */
+.submenu {
+    display: none;
+    list-style: none;
+    padding-left: 15px;
+    margin-top: 5px;
+}
+
+/* Mostrar submenú al pasar el mouse */
+.menu-item:hover .submenu {
+    display: block;
+}
+
+.submenu li {
+    padding: 6px 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.submenu li:hover {
+    color: #0077cc;
+}

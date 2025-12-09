@@ -1,0 +1,13 @@
+.header2 {
+    background-color: #FFFFFF;
+    color: #651d32ff;
+    display: grid;
+    grid-template-columns: auto 1fr 2fr;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+}
+
+.header2 h2 {
+    margin: 0;
+}
