@@ -17,8 +17,7 @@ import NomArea from './NomArea';
 import Actividad from './Actividad';
 import NomDirAdm from './NomDirAdm';
 import Footer from './Footer';
-import SaludoTecnico from './SaludoTecnico';
-import MenuLateral from './MenuLateral';
+import Main from './Main';
 
 
 
@@ -48,25 +47,9 @@ function Layout({ children }) {
                 </div>
             </header>
 
-            <main className='main'>
-                <div className='contenedor-main'>
-
-                    {/* Menú lateral */}
-                    <MenuLateral />
-
-                    {/* Contenido principal */}
-                    <div className="contenido">
-
-                        <SaludoTecnico usuario={usuario} aPaterno={aPaterno} />
-
-                        {loading && <p>Cargando datos...</p>}
-                        {error && <p style={{ color: "red" }}>{error}</p>}
-                        {!loading && !error && children}
-
-                    </div>
-
-                </div>
-            </main>
+            <Main>
+                {children}
+            </Main>
 
             <footer className='footer'>
                 <Footer />

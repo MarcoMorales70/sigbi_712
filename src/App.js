@@ -6,7 +6,7 @@ function App() {
   const { cargarTecnico } = useContext(AppContext);
 
   useEffect(() => {
-    cargarTecnico(7654321); // se define qué técnico inicia sesión
+    cargarTecnico(6754321); // se define qué técnico inicia sesión
   }, []);
 
   return <Layout />;

@@ -1,8 +1,8 @@
 .menu-lateral {
-    width: 220px;
+    width: 200px;
     background-color: #f4f4f4;
     padding: 15px;
-    border-right: 1px solid #ccc;
+    border-right: 0.5px solid #651d32ff;
     height: 100%;
 }
 

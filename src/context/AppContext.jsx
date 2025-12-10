@@ -14,6 +14,10 @@ export const AppProvider = ({ children }) => {
 
     // Función para cargar datos del técnico desde el endpoint
     const cargarTecnico = async (id) => {
+
+        // Si no hay id, no hagas nada
+        if (!id) return;
+
         setLoading(true);
         setError(null);
 

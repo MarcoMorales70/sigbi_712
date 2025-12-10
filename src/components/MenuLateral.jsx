@@ -1,6 +1,10 @@
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 import '../styles/MenuLateral.css';
 
 function MenuLateral() {
+    const { setAccion } = useContext(AppContext);
+
     return (
         <nav className="menu-lateral">
             <ul>
@@ -9,19 +13,25 @@ function MenuLateral() {
                 <li className="menu-item">
                     Ingresar
                     <ul className="submenu">
-                        <li>Iniciar Sesión</li>
-                        <li>Cambiar Contraseña</li>
-                        <li>Recuperar Contraseña</li>
-                        <li>Completar Registro</li>
+                        <li onClick={() => setAccion("login")}>
+                            Iniciar Sesión
+                        </li>
+                        <li onClick={() => setAccion("cambiar_password")}>
+                            Cambiar Contraseña
+                        </li>
+                        <li onClick={() => setAccion("recuperar_password")}>
+                            Recuperar Contraseña
+                        </li>
+                        <li onClick={() => setAccion("registro")}>
+                            Completar Registro
+                        </li>
                     </ul>
                 </li>
 
-                {/* Opción principal: Acerca de... */}
                 <li className="menu-item">
                     Acerca de...
                 </li>
 
-                {/* Opción principal: Contacto */}
                 <li className="menu-item">
                     Contacto
                 </li>
