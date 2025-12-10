@@ -25,7 +25,7 @@ function Layout({ children }) {
 
     console.log(" Mensaje de prueba ---- Layout se está renderizando");
 
-    const { categoria, accion, usuario, aPaterno, tecnico, loading, error } = useContext(AppContext);
+    const { categoria, accion, usuario, aPaterno, tecnico, permiso, loading, error } = useContext(AppContext);
     console.log(" Mensaje de prueba ---- Datos del técnico:", tecnico);
 
     return (
@@ -36,13 +36,13 @@ function Layout({ children }) {
 
                 <div className='header2'>
                     <div><Logo /></div>
-                    <div><TituloModulo categoria={categoria} /></div>
+                    <div><TituloModulo permiso={permiso} /></div>
                     <div><NomDirGen /></div>
                 </div>
 
                 <div className='header3'>
                     <div><NomArea /></div>
-                    <div><Actividad accion={accion} /></div>
+                    <div><Actividad permiso={permiso} /></div>
                     <div><NomDirAdm /></div>
                 </div>
             </header>

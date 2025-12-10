@@ -5,12 +5,13 @@ export const AppContext = createContext();
 export const AppProvider = ({ children }) => {
     const [idTecnico, setIdTecnico] = useState(null);
     const [tecnico, setTecnico] = useState(null);
-    const [categoria, setCategoria] = useState(null);
+    const [categoria, setCategoria] = useState(1);
     const [usuario, setUsuario] = useState(null);
     const [aPaterno, setApaterno] = useState(null);
     const [accion, setAccion] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [permiso, setPermiso] = useState(100);
 
     // Función para cargar datos del técnico desde el endpoint
     const cargarTecnico = async (id) => {
@@ -50,7 +51,9 @@ export const AppProvider = ({ children }) => {
                 usuario,
                 aPaterno,
                 accion,
+                permiso,
                 setAccion,
+                setPermiso,
                 cargarTecnico,
                 loading,
                 error

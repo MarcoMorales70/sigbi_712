@@ -3,7 +3,8 @@ import { AppContext } from "../context/AppContext";
 import '../styles/MenuLateral.css';
 
 function MenuLateral() {
-    const { setAccion } = useContext(AppContext);
+
+    const { setPermiso } = useContext(AppContext);
 
     return (
         <nav className="menu-lateral">
@@ -13,16 +14,16 @@ function MenuLateral() {
                 <li className="menu-item">
                     Ingresar
                     <ul className="submenu">
-                        <li onClick={() => setAccion("login")}>
+                        <li onClick={() => setPermiso(1)}>
                             Iniciar Sesión
                         </li>
-                        <li onClick={() => setAccion("cambiar_password")}>
+                        <li onClick={() => setPermiso(2)}>
                             Cambiar Contraseña
                         </li>
-                        <li onClick={() => setAccion("recuperar_password")}>
+                        <li onClick={() => setPermiso(3)}>
                             Recuperar Contraseña
                         </li>
-                        <li onClick={() => setAccion("registro")}>
+                        <li onClick={() => setPermiso(4)}>
                             Completar Registro
                         </li>
                     </ul>
