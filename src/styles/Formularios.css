@@ -1,0 +1,97 @@
+/* FORMULARIO PRINCIPAL */
+.sesion-form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 600px;
+    /* más estrecho que 900px */
+    margin: 40px auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    font-family: "Segoe UI", Roboto, sans-serif;
+    transition: transform 0.2s ease;
+}
+
+.sesion-form:hover {
+    transform: translateY(-2px);
+}
+
+/* FORMULARIO FLEXIBLE */
+.sesion-form form {
+    display: flex;
+    flex-direction: column;
+    /* vertical más compacto */
+    gap: 16px;
+    align-items: center;
+    /* centra los elementos */
+}
+
+/* GRUPOS DE INPUTS */
+.form-group {
+    width: 80%;
+    /* no ocupa todo el ancho */
+    max-width: 400px;
+    /* límite máximo */
+    display: flex;
+    flex-direction: column;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .form-group {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+input {
+    width: 100%;
+    padding: 8px 6px;
+    /* menos padding */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
+    border-color: #651d32;
+    box-shadow: 0 0 6px rgba(101, 29, 50, 0.4);
+    outline: none;
+}
+
+button {
+    width: auto;
+    /* ya no ocupa todo el ancho */
+    min-width: 150px;
+    /* tamaño mínimo */
+    padding: 10px 20px;
+    /* más compacto */
+    background: linear-gradient(135deg, #651d32, #4a1424);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.15s ease;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #4a1424, #651d32);
+    transform: scale(1.02);
+}
+
+.error {
+    color: #d32f2f;
+    margin-top: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+}

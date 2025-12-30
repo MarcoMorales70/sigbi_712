@@ -1,34 +1,19 @@
-import { useEffect, useState } from "react";
 import "../styles/Actividad.css";
+import { useGlobal } from "../context/ContenedorGlobal";
 
-function Actividad({ permiso }) {
-    const [nombreActividad, setNombreActividad] = useState("Sistema"); // valor por defecto
+function Actividad() {
+    const { moduloActual, subModuloActual, identidad } = useGlobal();
 
-    useEffect(() => {
-        const obtenerActividad = async () => {
-            try {
-                const response = await fetch(`http://localhost/api/actividad.php?id=${permiso}`);
-                const data = await response.json();
-
-                if (data && data.permiso) {
-                    setNombreActividad(data.permiso);
-                } else {
-                    setNombreActividad("Sin actividad");
-                }
-            } catch (error) {
-                console.error("Error al obtener la actividad:", error);
-                setNombreActividad("Error de conexión");
-            }
-        };
-
-        if (permiso) {
-            obtenerActividad();
-        }
-    }, [permiso]);
+    // Prioridad: primero subModuloActual, luego moduloActual
+    const actividad =
+        subModuloActual ||
+        moduloActual ||
+        identidad?.categoria ||
+        "Sistema de Control de Bienes Informáticos";
 
     return (
         <h3 className="actividad">
-            {nombreActividad}
+            {actividad}
         </h3>
     );
 }

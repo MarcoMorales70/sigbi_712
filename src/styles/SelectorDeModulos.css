@@ -1,0 +1,28 @@
+.selector-modulos-sidebar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px;
+    background: #f0f0f0;
+    border-bottom: 10px solid #e6d194;
+}
+
+.modulo-tag {
+    padding: 4px 8px;
+    background: #e6d194;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.modulo-tag:hover {
+    background: #d4d4d4;
+}
+
+.modulo-tag.activo {
+    background: #651d32ff;
+    /* gris oscuro institucional */
+    color: white;
+}

@@ -1,79 +1,116 @@
-import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
-import MenuLateral from "./MenuLateral";
-import SaludoTecnico from "./SaludoTecnico";
-import LoginForm from "./LoginForm";
-
-import "../styles/Main.css";
-
-function Main({ children }) {
-    const { usuario, aPaterno, loading, error, accion } = useContext(AppContext);
+import { useGlobal } from "../context/ContenedorGlobal";
+import SesionForm from "./SesionForm";
+import Control from "./Control";
+import CambiarContrasena from "./CambiarContrasena";
+import RecuperarContrasena from "./RecuperarContrasena";
+import CompletarRegistro from "./CompletarRegistro";
 
 
-    //bloque de seleccion segun permiso 
-    //Esta función decide qué mostrar según el permiso (accion)
 
-    const renderContenido = () => {
-        if (loading) return <p>Cargando datos...</p>;
-        if (error) return <p style={{ color: "red" }}>{error}</p>;
+function Main() {
+    const { moduloActual, subModuloActual, identidad, setModuloActual, setSubModuloActual, setIdentidad } = useGlobal();
 
-        switch (accion) {
-            case "login":
-                return <LoginForm />;
+    console.log("Main render:", { moduloActual, subModuloActual, identidad });
 
-            case "cambiar_password":
-                return <p>Aquí irá el formulario de cambiar contraseña</p>;
-
-            case "recuperar_password":
-                return <p>Aquí irá el formulario de recuperar contraseña</p>;
-
-            case "registro":
-                return <p>Aquí irá el formulario de registro</p>;
-
-            // Más adelante: módulos reales
-            case "bienes":
-                return <p>Módulo de bienes</p>;
-
-            case "hardware":
-                return <p>Módulo de hardware</p>;
-
-            default:
-                return children; // Vista por defecto
+    // ============================
+    // 1. MODO INVITADO
+    // ============================
+    if (!identidad) {
+        if (subModuloActual === "Iniciar sesión") {
+            return (
+                <div style={{ padding: "20px" }}>
+                    <SesionForm />
+                </div>
+            );
         }
-    };
 
-    // termina bloque de decisión 
+        // 👇 Caso especial: Cambiar contraseña en modo invitado
+        if (subModuloActual === "Cambiar contraseña") {
+            return (
+                <div style={{ padding: "20px" }}>
+                    <CambiarContrasena
+                        onSuccess={() => {
+                            // cerrar sesión y regresar al login
+                            setIdentidad(null);
+                            setModuloActual("Autenticación");
+                            setSubModuloActual(null);
+                        }}
+                    />
+                </div>
+            );
+        }
 
+        // Recuperar contraseña en modo invitado
+        if (subModuloActual === "Recuperar contraseña") {
+            return (
+                <div style={{ padding: "20px" }}>
+                    <RecuperarContrasena />
+                </div>
+            );
+        }
+
+        // Completar registro 
+        if (subModuloActual === "Completar registro") {
+            return (
+                <div style={{ padding: "20px" }}>
+                    <CompletarRegistro />
+                </div>
+            );
+        }
+
+
+
+
+
+
+
+        if (subModuloActual) {
+            return (
+                <div style={{ padding: "20px" }}>
+                    <p>Vista correspondiente a: {subModuloActual}</p>
+                </div>
+            );
+        }
+
+        return (
+            <div style={{ padding: "20px" }}>
+                <p>Selecciona una opción del menú lateral para iniciar sesión.</p>
+            </div>
+        );
+    }
+
+    // ============================
+    // 2. MODO AUTENTICADO
+    // ============================
+
+    if (subModuloActual) {
+        return (
+            <div style={{ padding: "20px" }}>
+                <p>Vista correspondiente a: {subModuloActual}</p>
+            </div>
+        );
+    }
+
+    if (moduloActual === "Control") {
+        return (
+            <div style={{ padding: "20px" }}>
+                <Control />
+            </div>
+        );
+    }
+
+    if (moduloActual) {
+        return (
+            <div style={{ padding: "20px" }}>
+                <p>Contenido del módulo {moduloActual}</p>
+            </div>
+        );
+    }
 
     return (
-        <main className="main">
-
-            {/* Saludo superior */}
-            <div className="saludo">
-                <SaludoTecnico usuario={usuario} aPaterno={aPaterno} />
-            </div>
-
-            {/* Contenedor principal */}
-            <div className="contenedor-main">
-
-                {/* Menú lateral */}
-                <MenuLateral />
-
-                {/* Contenido dinámico */}
-                <div className="contenido">
-
-                    {renderContenido()}
-
-                    {/*
-                    {loading && <p>Cargando datos...</p>}
-                    {error && <p style={{ color: "red" }}>{error}</p>}
-                    {!loading && !error && children}
-                    */}
-
-                </div>
-
-            </div>
-        </main>
+        <div style={{ padding: "20px" }}>
+            <p>Selecciona una opción del menú lateral XXXX.</p>
+        </div>
     );
 }
 

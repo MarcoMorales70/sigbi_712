@@ -1,4 +1,3 @@
-
 import '../styles/Layout.css';
 
 import '../styles/Header1.css';
@@ -6,8 +5,7 @@ import '../styles/Header2.css';
 import '../styles/Header3.css';
 import '../styles/Main.css';
 
-import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
+import { useGlobal } from "../context/ContenedorGlobal";
 
 import TituloSistema from './TituloSistema';
 import Logo from './Logo';
@@ -18,39 +16,51 @@ import Actividad from './Actividad';
 import NomDirAdm from './NomDirAdm';
 import Footer from './Footer';
 import Main from './Main';
+import Sidebar from './Sidebar';
+import SaludoTecnico from './SaludoTecnico';
 
 
 
 function Layout({ children }) {
 
-    console.log(" Mensaje de prueba ---- Layout se está renderizando");
-
-    const { categoria, accion, usuario, aPaterno, tecnico, permiso, loading, error } = useContext(AppContext);
-    console.log(" Mensaje de prueba ---- Datos del técnico:", tecnico);
+    const { identidad, moduloActual } = useGlobal();
 
     return (
         <div className="layout">
 
+            {/* ENCABEZADO */}
             <header>
                 <div className='header1'><TituloSistema /></div>
 
                 <div className='header2'>
                     <div><Logo /></div>
-                    <div><TituloModulo permiso={permiso} /></div>
+                    <div><TituloModulo modulo={moduloActual} /></div> {/* Componente dinámico */}
                     <div><NomDirGen /></div>
                 </div>
 
                 <div className='header3'>
                     <div><NomArea /></div>
-                    <div><Actividad permiso={permiso} /></div>
+                    <div><Actividad modulo={moduloActual} /></div> {/* Componente dinámico */}
                     <div><NomDirAdm /></div>
                 </div>
+                <div><SaludoTecnico /></div>
             </header>
 
-            <Main>
-                {children}
-            </Main>
+            {/* CONTENEDOR PRINCIPAL: SIDEBAR + MAIN */}
+            <div className="contenido">
 
+
+                <Sidebar />
+
+                <main className="main">
+                    <Main>
+
+                        {children}
+                    </Main>
+                </main>
+            </div>
+
+            {/* PIE DE PÁGINA */}
             <footer className='footer'>
                 <Footer />
             </footer>
@@ -59,5 +69,3 @@ function Layout({ children }) {
 }
 
 export default Layout;
-
-

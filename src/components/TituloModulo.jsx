@@ -1,34 +1,16 @@
-import { useEffect, useState } from "react";
 import "../styles/TituloModulo.css";
+import { useGlobal } from "../context/ContenedorGlobal";
 
-function TituloModulo({ permiso }) {
-    const [nombreCategoria, setNombreCategoria] = useState("Página principal");
+function TituloModulo() {
 
-    useEffect(() => {
-        const obtenerModulo = async () => {
-            try {
-                const response = await fetch(`http://localhost/api/modulo.php?id=${permiso}`);
-                const data = await response.json();
+    const { moduloActual, identidad } = useGlobal();
 
-                if (data && data.categoria) {
-                    setNombreCategoria(data.categoria);
-                } else {
-                    setNombreCategoria("Sin módulo");
-                }
-            } catch (error) {
-                console.error("Error al obtener el módulo:", error);
-                setNombreCategoria("Error de conexión");
-            }
-        };
-
-        if (permiso) {
-            obtenerModulo();
-        }
-    }, [permiso]);
+    // Si no hay móduloActual, usamos la categoría del usuario (Página Principal)
+    const nombre = moduloActual || identidad?.categoria || "Página Principal";
 
     return (
         <h2 className="titulo-modulo">
-            {nombreCategoria}
+            {nombre}
         </h2>
     );
 }

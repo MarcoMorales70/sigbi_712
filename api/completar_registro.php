@@ -1,0 +1,152 @@
+<?php
+require_once __DIR__ . "/cors.php";
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+// =========================
+// CONFIGURACIÓN PHP
+// =========================
+ini_set('display_errors', 0);
+error_reporting(0);
+
+header("Content-Type: application/json; charset=UTF-8");
+
+include __DIR__ . "/conexion.php";
+
+// =========================
+// RECIBIR DATOS
+// =========================
+$data = json_decode(file_get_contents("php://input"), true);
+
+$id_tecnico             = $data['id_tecnico'] ?? null;
+$codigo_temp_ingresado  = $data['codigo_temp'] ?? null;
+$contrasena             = $data['contrasena'] ?? null;
+$contrasena_confirmacion= $data['contrasena_confirmacion'] ?? null;
+
+// Normalizar código temporal a mayúsculas
+$codigo_temp_ingresado = $codigo_temp_ingresado ? strtoupper($codigo_temp_ingresado) : null;
+
+// =========================
+// VALIDACIONES BÁSICAS
+// =========================
+if (!$id_tecnico || !$codigo_temp_ingresado || !$contrasena || !$contrasena_confirmacion) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Debe ingresar todos los campos: ID técnico, código de registro y contraseñas."
+    ]);
+    exit;
+}
+
+if (!preg_match("/^\d{7}$/", $id_tecnico)) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "El ID técnico debe contener exactamente 7 dígitos."
+    ]);
+    exit;
+}
+
+if (!preg_match("/^[A-Z0-9]{6}$/", $codigo_temp_ingresado)) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "El código de registro debe tener exactamente 6 caracteres alfanuméricos (A-Z, 0-9)."
+    ]);
+    exit;
+}
+
+if (strlen($contrasena) < 8) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "La contraseña debe tener al menos 8 caracteres."
+    ]);
+    exit;
+}
+
+if ($contrasena !== $contrasena_confirmacion) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Las contraseñas no coinciden."
+    ]);
+    exit;
+}
+
+// =========================
+// CONSULTAR TÉCNICO
+// =========================
+$sqlTec = "SELECT codigo_temp FROM tecnicos WHERE id_tecnico = ?";
+$stmtTec = $conn->prepare($sqlTec);
+
+if (!$stmtTec) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Error interno en el servidor (SQL técnico)."
+    ]);
+    exit;
+}
+
+$stmtTec->bind_param("s", $id_tecnico);
+$stmtTec->execute();
+$resultTec = $stmtTec->get_result();
+
+if ($resultTec->num_rows === 0) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "El técnico no existe."
+    ]);
+    exit;
+}
+
+$tec = $resultTec->fetch_assoc();
+
+// Validar existencia de código_temp
+if (!$tec['codigo_temp']) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "No hay código de registro asignado. Solicítelo al administrador."
+    ]);
+    exit;
+}
+
+// Comparar código ingresado con el almacenado
+if (strtoupper($tec['codigo_temp']) !== $codigo_temp_ingresado) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "El código de registro no coincide."
+    ]);
+    exit;
+}
+
+// =========================
+// ACTUALIZAR REGISTRO
+// =========================
+$sqlUpdate = "UPDATE tecnicos SET contrasena = ?, codigo_temp = NULL WHERE id_tecnico = ?";
+$stmtUpdate = $conn->prepare($sqlUpdate);
+
+if (!$stmtUpdate) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Error interno en el servidor (SQL update)."
+    ]);
+    exit;
+}
+
+$stmtUpdate->bind_param("ss", $contrasena, $id_tecnico);
+
+if ($stmtUpdate->execute()) {
+    echo json_encode([
+        "status" => "ok",
+        "message" => "Registro completado. Ahora puede iniciar sesión."
+    ]);
+} else {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Error al completar el registro."
+    ]);
+}
+
+$stmtTec->close();
+$stmtUpdate->close();
+$conn->close();
+?>

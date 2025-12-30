@@ -1,10 +1,19 @@
-import '../styles/SaludoTecnico.css';
+import "../styles/SaludoTecnico.css";
+import { useGlobal } from "../context/ContenedorGlobal";
 
-function SaludoTecnico({ usuario, aPaterno }) {
-    if (!usuario || !aPaterno) return null;
+function SaludoTecnico() {
+
+    const { identidad } = useGlobal();
+
+    // Si no hay identidad, no mostramos nada
+    if (!identidad) return null;
+
+    // Usamos el nombre completo que ya devuelve login.php
+    const nombreCompleto = identidad.nombre || "Técnico";
+
     return (
         <h3 className="saludo">
-            Hola: {usuario} {aPaterno}
+            Hola: {nombreCompleto}
         </h3>
     );
 }

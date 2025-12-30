@@ -1,6 +1,7 @@
 .saludo {
-    background-color: #ebe8de;
     justify-content: left;
-    padding-left: 20px;
-    color: #651D32FF;
+    padding-left: 50px;
+    /*color: #651D32FF;*/
+    color: #002f2a;
+    font-size: 16px;
 }
