@@ -37,19 +37,30 @@ function Sidebar() {
     // ============================
     // 3. Acción de cerrar sesión
     // ============================
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("http://localhost/sigbi_712/api/logout.php", {
+                method: "POST",
+                credentials: "include"   // 👈 importante: envía la cookie PHPSESSID
+            });
+
+            const data = await response.json();
+            console.log("Logout backend:", data);
+
+        } catch (error) {
+            console.error("Error al cerrar sesión en backend:", error);
+        }
+
+        // ✅ Limpiar estado global en frontend
         setIdentidad(null);
         setModuloActual("Autenticación");
         setSubModuloActual("Iniciar sesión");
-        localStorage.removeItem("token"); // opcional si usas token
     };
 
     return (
         <aside className="sidebar">
 
             {/* Selector de módulos en la parte superior del Sidebar.jsx */}
-            {/*<SelectorDeModulos />*/}
-
             {identidad && <SelectorDeModulos />}
 
             <ul className="sidebar-lista">
@@ -75,7 +86,14 @@ function Sidebar() {
                     return (
                         <li key={seccion} className="sidebar-seccion">
 
-                            <div className="sidebar-seccion-titulo">
+                            {/* Al hacer clic en el título de la sección, cambiamos el módulo */}
+                            <div
+                                className="sidebar-seccion-titulo"
+                                onClick={() => {
+                                    setModuloActual(seccion);
+                                    setSubModuloActual(null); // limpiar submódulo
+                                }}
+                            >
                                 {seccion}
                             </div>
 

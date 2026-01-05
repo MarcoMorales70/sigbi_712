@@ -38,7 +38,7 @@ function RecuperarContrasena() {
         }
 
         try {
-            const response = await fetch("/api/recuperar_contrasena.php", {
+            const response = await fetch("http://localhost/sigbi_712/api/recuperar_contrasena.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -50,7 +50,7 @@ function RecuperarContrasena() {
             const data = await response.json();
 
             if (data.status === "ok") {
-                setSuccessMessage("Su contraseña ha sido enviada a su correo institucional.");
+                setSuccessMessage("Se envió un enlace de restablecimiento a su correo institucional.");
             } else {
                 setError(data.message || "Error al procesar la solicitud.");
             }
@@ -66,8 +66,6 @@ function RecuperarContrasena() {
 
     return (
         <div className="sesion-form">
-            {/*<h2>Recuperar contraseña</h2>*/}
-
             {!successMessage && (
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -94,7 +92,10 @@ function RecuperarContrasena() {
 
                     {error && <div className="error">{error}</div>}
 
-                    <button type="submit">Recuperar contraseña</button>
+                    <div className="form-buttons">
+                        <button type="submit">Recuperar contraseña</button>
+                        <button type="button" onClick={handleRegresar}>Regresar</button>
+                    </div>
                 </form>
             )}
 
@@ -103,11 +104,6 @@ function RecuperarContrasena() {
                     <p>{successMessage}</p>
                 </div>
             )}
-            {/*}
-            <div style={{ marginTop: "16px" }}>
-                <button onClick={handleRegresar}>Regresar al inicio</button>
-            </div>
-*/}
         </div>
     );
 }

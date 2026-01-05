@@ -3,7 +3,7 @@ import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import { obtenerModulosDesdePermisos } from "../data/permisosUtils";
 
-function SesionForm() {
+function IniciarSesion() {
 
     const { setIdentidad, setModuloActual, setSubModuloActual, setPermisos } = useGlobal();
 
@@ -33,7 +33,8 @@ function SesionForm() {
                 body: JSON.stringify({
                     id_tecnico: idTecnico,
                     contrasena: contrasena
-                })
+                }),
+                credentials: "include"   // 👈 importante: envía la cookie PHPSESSID
             });
 
             const data = await response.json();
@@ -51,17 +52,8 @@ function SesionForm() {
             setSubModuloActual(null);
 
             // ✅ Obtener módulos reales desde permisos
-            //let modulosPermitidos = obtenerModulosDesdePermisos(data.permisos);
-            //console.log("MODULOS PERMITIDOS (sin filtrar):", modulosPermitidos);
-
             let modulosPermitidos = obtenerModulosDesdePermisos(data.permisos);
             modulosPermitidos = modulosPermitidos.filter(m => m !== "Autenticación");
-            setModuloActual(modulosPermitidos[0] ?? "Autenticación");
-
-
-
-
-
 
             // ✅ Filtrar el módulo "Ingresar" (solo es para modo invitado)
             modulosPermitidos = modulosPermitidos.filter(m => m !== "Ingresar");
@@ -72,7 +64,7 @@ function SesionForm() {
                 console.log("SETEANDO MODULO ACTUAL A:", modulosPermitidos[0]);
                 setModuloActual(modulosPermitidos[0]);
             } else {
-                console.log("NO HAY MODULOS REALES, USANDO 'Ingresar'");
+                console.log("NO HAY MODULOS REALES, USANDO 'Autenticación'");
                 setModuloActual("Autenticación");
             }
 
@@ -84,8 +76,6 @@ function SesionForm() {
 
     return (
         <div className="sesion-form">
-            {/*<h2>Iniciar sesión</h2>*/}
-
             <form onSubmit={enviarFormulario}>
 
                 <div className="form-group">
@@ -116,10 +106,14 @@ function SesionForm() {
 
                 {error && <p className="error">{error}</p>}
 
-                <button type="submit">Entrar</button>
+
+                <div className="form-buttons">
+                    <button type="submit">Entrar</button>
+                </div>
+
             </form>
         </div>
     );
 }
 
-export default SesionForm;
+export default IniciarSesion;

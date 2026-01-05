@@ -14,7 +14,7 @@ export const permisosMap = {
     5: { modulo: "Control", seccion: "Técnicos", titulo: "Registrar Técnicos" },
     6: { modulo: "Control", seccion: "Técnicos", titulo: "Consultar Técnicos" },
     7: { modulo: "Control", seccion: "Técnicos", titulo: "Modificar Técnicos" },
-    8: { modulo: "Control", seccion: "Técnicos", titulo: "Modificar Permisos" },
+    //8: { modulo: "Control", seccion: "Técnicos", titulo: "Modificar Permisos" },
     9: { modulo: "Control", seccion: "Técnicos", titulo: "Eliminar Técnicos" },
 
     10: { modulo: "Control", seccion: null, titulo: "Generar Códigos" },

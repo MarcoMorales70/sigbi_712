@@ -16,19 +16,18 @@ export function ContenedorGlobalProvider({ children }) {
     const [moduloActual, setModuloActual] = useState("Autenticación");
     const [subModuloActual, setSubModuloActual] = useState(null);
 
-    // Cerrar sesión: vuelve al modo invitado y restablece navegación
-    /*const logout = () => {
-        setIdentidad(null);
-        setPermisos(permisosArranque);
-        setModuloActual("Autenticación");
-        setSubModuloActual(null);
-    };*/
+    // Técnico seleccionado (para pasar de Consultar → Modificar)
+    const [tecnicoSeleccionado, setTecnicoSeleccionado] = useState(null);
+
+    // Cerrar sesión: destruye sesión en backend y limpia estado en frontend
     const logout = async () => {
         try {
-            await fetch("http://localhost/sigbi_712/api/logout.php", {
+            const response = await fetch("http://localhost/sigbi_712/api/logout.php", {
                 method: "POST",
                 credentials: "include"
             });
+            const data = await response.json();
+            console.log("Logout backend:", data);
         } catch (error) {
             console.error("Error cerrando sesión en backend:", error);
         }
@@ -36,22 +35,22 @@ export function ContenedorGlobalProvider({ children }) {
         setPermisos(permisosArranque);
         setModuloActual("Autenticación");
         setSubModuloActual(null);
+        setTecnicoSeleccionado(null); // limpiar técnico seleccionado
     };
-
-
-
-
-
-
-
 
     // Iniciar sesión: configura identidad, permisos y navega al módulo inicial
     const login = (nuevaIdentidad, nuevosPermisos = []) => {
         setIdentidad(nuevaIdentidad);
         setPermisos(Array.isArray(nuevosPermisos) ? nuevosPermisos : []);
-        // Opcional: al iniciar sesión, limpiar submódulos y redirigir al módulo por defecto
-        setModuloActual("Control"); // ajusta si tu pantalla inicial autenticada es otra
         setSubModuloActual(null);
+        setTecnicoSeleccionado(null); // limpiar técnico seleccionado
+
+        // Seleccionar módulo inicial dinámico
+        if (nuevosPermisos.length > 0) {
+            setModuloActual("Control"); // ajusta según tu lógica real
+        } else {
+            setModuloActual("Autenticación");
+        }
     };
 
     return (
@@ -65,8 +64,10 @@ export function ContenedorGlobalProvider({ children }) {
                 setModuloActual,
                 subModuloActual,
                 setSubModuloActual,
+                tecnicoSeleccionado,
+                setTecnicoSeleccionado,
                 logout,
-                login, // expuesto para uso en SesionForm/login.php
+                login,
             }}
         >
             {children}

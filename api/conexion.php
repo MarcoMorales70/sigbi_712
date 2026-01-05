@@ -1,5 +1,4 @@
 <?php
-// Cabecera siempre al inicio
 header("Content-Type: application/json; charset=UTF-8");
 
 // Parámetros de conexión
@@ -8,18 +7,20 @@ $user = "root";
 $pass = "";
 $db   = "sigbi_db";
 
-// Crear conexión
-$conn = new mysqli($host, $user, $pass, $db);
+try {
+    // Crear conexión con PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
 
-// Validar conexión
-if ($conn->connect_error) {
-    // Se detiene y devuelve JSON con el error
-    die(json_encode([
+    // Configurar atributos de PDO
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // errores como excepciones
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); // resultados como array asociativo
+
+} catch (PDOException $e) {
+    // Si falla la conexión, devolver JSON con el error
+    echo json_encode([
         "status" => "error",
-        "message" => "Error de conexión: " . $conn->connect_error
-    ]));
+        "message" => "Error de conexión: " . $e->getMessage()
+    ]);
+    exit;
 }
-
-// Establecer charset para evitar problemas con acentos/ñ
-$conn->set_charset("utf8");
 ?>

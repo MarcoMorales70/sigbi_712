@@ -1,277 +1,86 @@
 <?php
 require_once __DIR__ . "/cors.php";
+include __DIR__ . "/conexion.php";  
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
+// Importar PHPMailer desde la carpeta src (que está un nivel arriba de api)
+require __DIR__ . '/../src/PHPMailer.php';
+require __DIR__ . '/../src/SMTP.php';
+require __DIR__ . '/../src/Exception.php';
 
-// =========================
-header("Content-Type: application/json; charset=UTF-8");<?php
-// =========================
-// CORS PARA REACT
-// =========================
-header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Credentials: true");
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
-
-// =========================
-// CONFIGURACIÓN PHP
-// =========================
-ini_set('display_errors', 0);
-error_reporting(0);
-
-header("Content-Type: application/json; charset=UTF-8");
-
-include __DIR__ . "/conexion.php";
-
-// =========================
-// RECIBIR DATOS
-// =========================
 $data = json_decode(file_get_contents("php://input"), true);
+$id_tecnico = $data['id_tecnico'] ?? null;
+$codigo_temp = $data['codigo_temp'] ?? null;
 
-$id_tecnico   = $data['id_tecnico'] ?? null;
-$codigo_temp  = $data['codigo_temp'] ?? null;
-
-// Normalizar: forzar mayúsculas en el código
-$codigo_temp = $codigo_temp ? strtoupper($codigo_temp) : null;
-
-// =========================
-// VALIDACIONES BÁSICAS
-// =========================
 if (!$id_tecnico || !$codigo_temp) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Debe ingresar ID técnico y código temporal."
-    ]);
+    echo json_encode(["status" => "error", "message" => "Datos incompletos."]);
     exit;
 }
 
-if (!preg_match("/^\d{7}$/", $id_tecnico)) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El ID técnico debe contener exactamente 7 dígitos."
-    ]);
-    exit;
+try {
+    // 1. Validar técnico y código
+    $sql = "SELECT codigo_temp FROM tecnicos WHERE id_tecnico = :id_tecnico";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(["id_tecnico" => $id_tecnico]);
+    $tecnico = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$tecnico) {
+        echo json_encode(["status" => "error", "message" => "El técnico no existe."]);
+        exit;
+    }
+
+    if ($tecnico['codigo_temp'] !== $codigo_temp) {
+        echo json_encode(["status" => "error", "message" => "El código temporal no coincide."]);
+        exit;
+    }
+
+    // 2. Obtener correo del usuario
+    $sqlCorreo = "SELECT correo FROM usuarios WHERE id_usuario = :id_tecnico";
+    $stmtCorreo = $pdo->prepare($sqlCorreo);
+    $stmtCorreo->execute(["id_tecnico" => $id_tecnico]);
+    $usuario = $stmtCorreo->fetch(PDO::FETCH_ASSOC);
+
+    if (!$usuario) {
+        echo json_encode(["status" => "error", "message" => "No se encontró correo asociado."]);
+        exit;
+    }
+
+    $destinatario = $usuario['correo'];
+
+    // 3. Preparar enlace de restablecimiento
+    $enlace = "https://tusistema.com/reset_password.php?id_tecnico=$id_tecnico&token=$codigo_temp";
+
+    // 4. Enviar correo
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.office365.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'marco.moralesl@outlook.com';
+        $mail->Password   = 'Pollo_2011';
+        $mail->SMTPSecure = 'tls';
+        $mail->Port       = 587;
+
+        $mail->setFrom('podriterrestre@outlook.com', 'Sistema SIGBI');
+        $mail->addAddress($destinatario);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Restablecimiento de contraseña";
+        $mail->Body    = "Ha solicitado restablecer su contraseña.<br>
+                          Haga clic en el siguiente enlace para definir una nueva:<br>
+                          <a href='$enlace'>$enlace</a>";
+
+        $mail->send();
+
+        echo json_encode(["status" => "ok", "message" => "Se envió un enlace de restablecimiento a su correo institucional."]);
+
+    } catch (Exception $e) {
+        echo json_encode(["status" => "error", "message" => "No se pudo enviar el correo. Error: {$mail->ErrorInfo}"]);
+    }
+
+} catch (PDOException $e) {
+    echo json_encode(["status" => "error", "message" => "Error en la operación: " . $e->getMessage()]);
 }
-
-if (!preg_match("/^[A-Z0-9]{6}$/", $codigo_temp)) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El código temporal debe tener exactamente 6 caracteres alfanuméricos (A-Z, 0-9)."
-    ]);
-    exit;
-}
-
-// =========================
-// CONSULTAR TÉCNICO
-// =========================
-$sqlTec = "SELECT contrasena, codigo_temp FROM tecnicos WHERE id_tecnico = ?";
-$stmtTec = $conn->prepare($sqlTec);
-
-if (!$stmtTec) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error interno en el servidor (SQL técnico)."
-    ]);
-    exit;
-}
-
-$stmtTec->bind_param("s", $id_tecnico);
-$stmtTec->execute();
-$resultTec = $stmtTec->get_result();
-
-if ($resultTec->num_rows === 0) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El técnico no existe."
-    ]);
-    exit;
-}
-
-$tec = $resultTec->fetch_assoc();
-
-// Validar existencia de código_temp
-if (!isset($tec['codigo_temp']) || $tec['codigo_temp'] === null || $tec['codigo_temp'] === "") {
-    echo json_encode([
-        "status" => "error",
-        "message" => "No hay código temporal asignado. Solicítelo al administrador."
-    ]);
-    exit;
-}
-
-// Comparar código (normalizado en mayúsculas)
-if (strtoupper($tec['codigo_temp']) !== $codigo_temp) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El código temporal no coincide."
-    ]);
-    exit;
-}
-
-// =========================
-// SIMULACIÓN DE ENVÍO DE CORREO
-// =========================
-// Aquí en el futuro se integrará PHPMailer con SMTP.
-// Por ahora devolvemos un mensaje de éxito simulado.
-
-echo json_encode([
-    "status" => "ok",
-    "message" => "Simulación: su contraseña ha sido enviada a su correo institucional."
-]);
-
-$stmtTec->close();
-$conn->close();
-?>
-ini_set('display_errors', 0);
-error_reporting(0);
-
-include __DIR__ . "/conexion.php";
-
-// =========================
-// RECIBIR DATOS
-// =========================
-$data = json_decode(file_get_contents("php://input"), true);
-
-$id_tecnico   = $data['id_tecnico'] ?? null;
-$codigo_temp  = $data['codigo_temp'] ?? null;
-
-// Normalizar: forzar mayúsculas en el código
-$codigo_temp = $codigo_temp ? strtoupper($codigo_temp) : null;
-
-// =========================
-// VALIDACIONES BÁSICAS
-// =========================
-if (!$id_tecnico || !$codigo_temp) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Debe ingresar ID técnico y código temporal."
-    ]);
-    exit;
-}
-
-if (!preg_match("/^\d{7}$/", $id_tecnico)) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El ID técnico debe contener exactamente 7 dígitos."
-    ]);
-    exit;
-}
-
-if (!preg_match("/^[A-Z0-9]{6}$/", $codigo_temp)) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El código temporal debe tener exactamente 6 caracteres alfanuméricos (A-Z, 0-9)."
-    ]);
-    exit;
-}
-
-// =========================
-// CONSULTAR TÉCNICO
-// =========================
-$sqlTec = "SELECT contrasena, codigo_temp FROM tecnicos WHERE id_tecnico = ?";
-$stmtTec = $conn->prepare($sqlTec);
-
-if (!$stmtTec) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error interno en el servidor (SQL técnico)."
-    ]);
-    exit;
-}
-
-$stmtTec->bind_param("s", $id_tecnico);
-$stmtTec->execute();
-$resultTec = $stmtTec->get_result();
-
-if ($resultTec->num_rows === 0) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El técnico no existe."
-    ]);
-    exit;
-}
-
-$tec = $resultTec->fetch_assoc();
-
-// Validar existencia de código_temp
-if (!isset($tec['codigo_temp']) || $tec['codigo_temp'] === null || $tec['codigo_temp'] === "") {
-    echo json_encode([
-        "status" => "error",
-        "message" => "No hay código temporal asignado. Solicítelo al administrador."
-    ]);
-    exit;
-}
-
-// Comparar código (normalizado en mayúsculas)
-if (strtoupper($tec['codigo_temp']) !== $codigo_temp) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El código temporal no coincide."
-    ]);
-    exit;
-}
-
-// =========================
-// OBTENER CORREO DEL USUARIO
-// =========================
-$sqlUsr = "SELECT correo FROM usuarios WHERE id_usuario = ?";
-$stmtUsr = $conn->prepare($sqlUsr);
-
-if (!$stmtUsr) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error interno en el servidor (SQL usuario)."
-    ]);
-    exit;
-}
-
-$stmtUsr->bind_param("s", $id_tecnico);
-$stmtUsr->execute();
-$resultUsr = $stmtUsr->get_result();
-
-if ($resultUsr->num_rows === 0) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "No se encontró el correo institucional del técnico."
-    ]);
-    exit;
-}
-
-$usr = $resultUsr->fetch_assoc();
-$correo = $usr['correo'];
-
-// =========================
-// ENVIAR CORREO CON CONTRASEÑA
-// =========================
-// Nota: Ajusta esta función a tu mecanismo real de correo (PHPMailer, SMTP, etc.)
-$asunto = "Recuperación de contraseña";
-$mensaje = "Su contraseña es: " . $tec['contrasena'];
-
-$headers = "From: no-reply@institucion.mx\r\n" .
-           "Content-Type: text/plain; charset=UTF-8\r\n";
-
-$enviado = mail($correo, $asunto, $mensaje, $headers);
-
-if ($enviado) {
-    echo json_encode([
-        "status" => "ok",
-        "message" => "Su contraseña ha sido enviada a su correo institucional."
-    ]);
-} else {
-    echo json_encode([
-        "status" => "error",
-        "message" => "No fue posible enviar el correo. Inténtelo más tarde."
-    ]);
-}
-
-$stmtTec->close();
-$stmtUsr->close();
-$conn->close();
-?>

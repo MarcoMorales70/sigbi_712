@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/cors.php";
+session_start();
 
 // Responder preflight OPTIONS
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -7,122 +8,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// =========================
-// CONFIGURACIÓN PHP
-// =========================
-ini_set('display_errors', 0);
-error_reporting(0);
+include __DIR__ . "/conexion.php"; // aquí ya tienes $pdo definido
 
-header("Content-Type: application/json; charset=UTF-8");
-
-include __DIR__ . "/conexion.php";
-
-// =========================
-// RECIBIR DATOS
-// =========================
 $data = json_decode(file_get_contents("php://input"), true);
+$contrasena_nueva = $data['contrasena_nueva'] ?? null;
 
-$id_tecnico        = $data['id_tecnico'] ?? null;
-$contrasena_actual = $data['contrasena_actual'] ?? null;
-$contrasena_nueva  = $data['contrasena_nueva'] ?? null;
-
-// =========================
-// VALIDACIONES BÁSICAS
-// =========================
-if (!$id_tecnico || !$contrasena_actual || !$contrasena_nueva) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Debe ingresar ID técnico, contraseña actual y nueva contraseña."
-    ]);
+if (!isset($_SESSION['id_tecnico'])) {
+    echo json_encode(["status" => "error", "message" => "Sesión no iniciada."]);
     exit;
 }
 
-if (!preg_match("/^\d{7}$/", $id_tecnico)) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El ID técnico debe contener exactamente 7 dígitos."
-    ]);
-    exit;
-}
+$id_tecnico = $_SESSION['id_tecnico'];
 
+// Validar longitud mínima
 if (strlen($contrasena_nueva) < 8) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "La nueva contraseña debe tener al menos 8 caracteres."
-    ]);
+    echo json_encode(["status" => "error", "message" => "La nueva contraseña debe tener al menos 8 caracteres."]);
     exit;
 }
 
-// =========================
-// CONSULTAR TÉCNICO
-// =========================
-$sql = "SELECT contrasena, id_estado FROM tecnicos WHERE id_tecnico = ?";
-$stmt = $conn->prepare($sql);
+// Generar hash seguro
+$hash = password_hash($contrasena_nueva, PASSWORD_DEFAULT);
 
-if (!$stmt) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error interno en el servidor (SQL)."
+try {
+    $sql_update = "UPDATE tecnicos SET contrasena = :contrasena WHERE id_tecnico = :id_tecnico";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([
+        "contrasena" => $hash,
+        "id_tecnico" => $id_tecnico
     ]);
-    exit;
+
+    if ($stmt_update->rowCount() > 0) {
+        // destruir sesión
+        session_unset();
+        session_destroy();
+        echo json_encode(["status" => "ok", "message" => "Contraseña actualizada y sesión cerrada."]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "No se actualizó la contraseña (verifica el ID)."]);
+    }
+
+} catch (PDOException $e) {
+    echo json_encode(["status" => "error", "message" => "Error al actualizar la contraseña: " . $e->getMessage()]);
 }
-
-$stmt->bind_param("s", $id_tecnico);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El técnico no existe."
-    ]);
-    exit;
-}
-
-$tecnico = $result->fetch_assoc();
-
-// =========================
-// VALIDAR ESTADO DEL TÉCNICO
-// =========================
-if ((int)$tecnico['id_estado'] !== 6) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El usuario no está activo. No puede cambiar su contraseña."
-    ]);
-    exit;
-}
-
-// =========================
-// VALIDAR CONTRASEÑA ACTUAL
-// =========================
-if ($contrasena_actual !== $tecnico['contrasena']) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "La contraseña actual no coincide."
-    ]);
-    exit;
-}
-
-// =========================
-// ACTUALIZAR CONTRASEÑA
-// =========================
-$sql_update = "UPDATE tecnicos SET contrasena = ? WHERE id_tecnico = ?";
-$stmt_update = $conn->prepare($sql_update);
-$stmt_update->bind_param("ss", $contrasena_nueva, $id_tecnico);
-
-if ($stmt_update->execute()) {
-    echo json_encode([
-        "status" => "ok",
-        "message" => "Operación exitosa"
-    ]);
-} else {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error al actualizar la contraseña."
-    ]);
-}
-
-$stmt->close();
-$stmt_update->close();
-$conn->close();
-?>

@@ -14,17 +14,17 @@ error_reporting(0);
 
 header("Content-Type: application/json; charset=UTF-8");
 
-include __DIR__ . "/conexion.php";
+include __DIR__ . "/conexion.php"; // aquí ya tienes $pdo definido
 
 // =========================
 // RECIBIR DATOS
 // =========================
 $data = json_decode(file_get_contents("php://input"), true);
 
-$id_tecnico             = $data['id_tecnico'] ?? null;
-$codigo_temp_ingresado  = $data['codigo_temp'] ?? null;
-$contrasena             = $data['contrasena'] ?? null;
-$contrasena_confirmacion= $data['contrasena_confirmacion'] ?? null;
+$id_tecnico              = $data['id_tecnico'] ?? null;
+$codigo_temp_ingresado   = $data['codigo_temp'] ?? null;
+$contrasena              = $data['contrasena'] ?? null;
+$contrasena_confirmacion = $data['contrasena_confirmacion'] ?? null;
 
 // Normalizar código temporal a mayúsculas
 $codigo_temp_ingresado = $codigo_temp_ingresado ? strtoupper($codigo_temp_ingresado) : null;
@@ -72,81 +72,68 @@ if ($contrasena !== $contrasena_confirmacion) {
     exit;
 }
 
-// =========================
-// CONSULTAR TÉCNICO
-// =========================
-$sqlTec = "SELECT codigo_temp FROM tecnicos WHERE id_tecnico = ?";
-$stmtTec = $conn->prepare($sqlTec);
+try {
+    // =========================
+    // CONSULTAR TÉCNICO
+    // =========================
+    $sqlTec = "SELECT codigo_temp FROM tecnicos WHERE id_tecnico = :id_tecnico";
+    $stmtTec = $pdo->prepare($sqlTec);
+    $stmtTec->execute(["id_tecnico" => $id_tecnico]);
+    $tec = $stmtTec->fetch();
 
-if (!$stmtTec) {
+    if (!$tec) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "El técnico no existe."
+        ]);
+        exit;
+    }
+
+    // Validar existencia de código_temp
+    if (!$tec['codigo_temp']) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "No hay código de registro asignado. Solicítelo al administrador."
+        ]);
+        exit;
+    }
+
+    // Comparar código ingresado con el almacenado
+    if (strtoupper($tec['codigo_temp']) !== $codigo_temp_ingresado) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "El código de registro no coincide."
+        ]);
+        exit;
+    }
+
+    // =========================
+    // ACTUALIZAR REGISTRO
+    // =========================
+    $hash = password_hash($contrasena, PASSWORD_DEFAULT);
+
+    $sqlUpdate = "UPDATE tecnicos SET contrasena = :contrasena, codigo_temp = NULL WHERE id_tecnico = :id_tecnico";
+    $stmtUpdate = $pdo->prepare($sqlUpdate);
+    $stmtUpdate->execute([
+        "contrasena" => $hash,
+        "id_tecnico" => $id_tecnico
+    ]);
+
+    if ($stmtUpdate->rowCount() > 0) {
+        echo json_encode([
+            "status" => "ok",
+            "message" => "Registro completado. Ahora puede iniciar sesión."
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Error al completar el registro."
+        ]);
+    }
+
+} catch (PDOException $e) {
     echo json_encode([
         "status" => "error",
-        "message" => "Error interno en el servidor (SQL técnico)."
-    ]);
-    exit;
-}
-
-$stmtTec->bind_param("s", $id_tecnico);
-$stmtTec->execute();
-$resultTec = $stmtTec->get_result();
-
-if ($resultTec->num_rows === 0) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El técnico no existe."
-    ]);
-    exit;
-}
-
-$tec = $resultTec->fetch_assoc();
-
-// Validar existencia de código_temp
-if (!$tec['codigo_temp']) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "No hay código de registro asignado. Solicítelo al administrador."
-    ]);
-    exit;
-}
-
-// Comparar código ingresado con el almacenado
-if (strtoupper($tec['codigo_temp']) !== $codigo_temp_ingresado) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "El código de registro no coincide."
-    ]);
-    exit;
-}
-
-// =========================
-// ACTUALIZAR REGISTRO
-// =========================
-$sqlUpdate = "UPDATE tecnicos SET contrasena = ?, codigo_temp = NULL WHERE id_tecnico = ?";
-$stmtUpdate = $conn->prepare($sqlUpdate);
-
-if (!$stmtUpdate) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error interno en el servidor (SQL update)."
-    ]);
-    exit;
-}
-
-$stmtUpdate->bind_param("ss", $contrasena, $id_tecnico);
-
-if ($stmtUpdate->execute()) {
-    echo json_encode([
-        "status" => "ok",
-        "message" => "Registro completado. Ahora puede iniciar sesión."
-    ]);
-} else {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error al completar el registro."
+        "message" => "Error interno en el servidor: " . $e->getMessage()
     ]);
 }
-
-$stmtTec->close();
-$stmtUpdate->close();
-$conn->close();
-?>

@@ -126,7 +126,16 @@ function CompletarRegistro() {
 
                     {error && <div className="error">{error}</div>}
 
-                    <button type="submit">Completar registro</button>
+                    <div className="form-buttons">
+                        <button type="submit">Completar registro</button>
+                    </div>
+
+
+
+
+
+
+
                 </form>
             )}
 
@@ -135,11 +144,6 @@ function CompletarRegistro() {
                     <p>{successMessage}</p>
                 </div>
             )}
-            {/*}
-            <div style={{ marginTop: "16px" }}>
-                <button onClick={handleRegresar}>Regresar al inicio</button>
-            </div>
-            */}
         </div>
     );
 }

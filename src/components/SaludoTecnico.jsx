@@ -13,7 +13,7 @@ function SaludoTecnico() {
 
     return (
         <h3 className="saludo">
-            Hola: {nombreCompleto}
+            Bienvenido: {nombreCompleto}
         </h3>
     );
 }

@@ -1,14 +1,14 @@
 import { useGlobal } from "../context/ContenedorGlobal";
 
-function Reportes() {
+function CerrarSolicitudes() {
 
     const { identidad, subModuloActual, setSubModuloActual, logout } = useGlobal();
 
     return (
         <div>
-            <p>Texto de prueba del componente Reportes.jsx</p>
+            <p>Texto de prueba desde dentro del componente CerrarSolicitudes.jsx</p>
         </div>
     );
 }
 
-export default Reportes;
+export default CerrarSolicitudes;
