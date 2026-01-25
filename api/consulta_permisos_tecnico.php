@@ -1,27 +1,34 @@
 <?php
+
+// Implementacion de cabeceras
 require_once __DIR__ . "/cors.php";
-require_once __DIR__ . "/conexion.php";
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 session_start();
+include __DIR__ . "/conexion.php"; // Con PDO definido
 
-header("Content-Type: application/json; charset=UTF-8");
+// Se valida el inicio de sesión
+if (!isset($_SESSION['identidad'])) {
+    echo json_encode(["status" => "error", "message" => "Sesión no iniciada."]);
+    exit;
+}
 
-// =========================
-// VALIDAR SESIÓN Y PERMISO
-// =========================
+// Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-if (!in_array(7, $permisos)) { // 7 = ID del permiso "Actualizar técnico"
+$permisosRequeridos = [7]; 
+$interseccion = array_intersect($permisosRequeridos, $permisos);
+
+if (empty($interseccion)) {
     echo json_encode(["status" => "error", "message" => "Acceso denegado."]);
     exit;
 }
 
-if (!isset($_SESSION['identidad'])) {
-    echo json_encode(["status" => "error", "message" => "Sesión no iniciada"]);
-    exit;
-}
-
-// =========================
-// RECIBIR DATOS
-// =========================
+// Se reciben datos
 $data = json_decode(file_get_contents("php://input"), true);
 $id_tecnico = $data['id_tecnico'] ?? null;
 
@@ -31,9 +38,7 @@ if (!$id_tecnico) {
 }
 
 try {
-    // =========================
-    // TRAER TODOS LOS PERMISOS
-    // =========================
+    // Se consultan todos los permisos
     $sqlPermisos = "SELECT id_permiso, permiso FROM permisos ORDER BY id_permiso ASC";
     $stmtPermisos = $pdo->query($sqlPermisos);
     $permisosDisponibles = [];
@@ -44,9 +49,7 @@ try {
         ];
     }
 
-    // =========================
-    // TRAER PERMISOS DEL TÉCNICO
-    // =========================
+    // Se consultan los permisos del técnico recibido
     $sqlSel = "SELECT id_permiso FROM permisos_tecnico WHERE id_tecnico = :id_tecnico";
     $stmtSel = $pdo->prepare($sqlSel);
     $stmtSel->execute(["id_tecnico" => $id_tecnico]);
@@ -55,9 +58,7 @@ try {
         $permisosSeleccionados[] = (int)$row["id_permiso"];
     }
 
-    // =========================
-    // RESPUESTA JSON
-    // =========================
+    // Respuesta json
     echo json_encode([
         "status" => "ok",
         "permisos" => $permisosDisponibles,

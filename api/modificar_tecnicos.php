@@ -1,27 +1,34 @@
 <?php
+
+// Implementacion de cabeceras
 require_once __DIR__ . "/cors.php";
-require_once __DIR__ . "/conexion.php";
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 session_start();
+include __DIR__ . "/conexion.php"; // Con PDO definido
 
-header("Content-Type: application/json; charset=UTF-8");
+// Se valida el inicio de sesión
+if (!isset($_SESSION['identidad'])) {
+    echo json_encode(["status" => "error", "message" => "Sesión no iniciada."]);
+    exit;
+}
 
-// =========================
-// VALIDAR SESIÓN Y PERMISO
-// =========================
+// Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-if (!in_array(7, $permisos)) { // 7 = ID del permiso "Actualizar técnico"
+$permisosRequeridos = [7]; 
+$interseccion = array_intersect($permisosRequeridos, $permisos);
+
+if (empty($interseccion)) {
     echo json_encode(["status" => "error", "message" => "Acceso denegado."]);
     exit;
 }
 
-if (!isset($_SESSION['identidad'])) {
-    echo json_encode(["status" => "error", "message" => "Sesión no iniciada"]);
-    exit;
-}
-
-// =========================
-// RECIBIR DATOS
-// =========================
+// Se reciben los datos
 $data = json_decode(file_get_contents("php://input"), true);
 
 $id_tecnico     = $data['id_tecnico'] ?? null;
@@ -35,9 +42,7 @@ if (!$id_tecnico || !$id_rol || !$id_estado) {
 }
 
 try {
-    // =========================
-    // OBTENER id_categoria DEL NUEVO ROL
-    // =========================
+    // Se obtiene la categoria dell nuevo rol, ya que si existe cambio de rol tambien cambia la categoría
     $sqlCat = "SELECT id_categoria FROM roles WHERE id_rol = :id_rol";
     $stmtCat = $pdo->prepare($sqlCat);
     $stmtCat->execute(["id_rol" => $id_rol]);
@@ -50,9 +55,8 @@ try {
 
     $id_categoria = $rowCat['id_categoria'];
 
-    // =========================
-    // ACTUALIZAR DATOS DEL TÉCNICO (rol + categoría + estado)
-    // =========================
+    // Actualizar datos del técnico rol + categoría + estado
+    
     $sqlUpdate = "UPDATE tecnicos 
                   SET id_rol = :id_rol, id_categoria = :id_categoria, id_estado = :id_estado 
                   WHERE id_tecnico = :id_tecnico";
@@ -64,20 +68,18 @@ try {
         "id_tecnico"   => $id_tecnico
     ]);
 
-    // =========================
-    // ACTUALIZAR PERMISOS
-    // =========================
+    // Actualizar permisos
     $sqlDel = "DELETE FROM permisos_tecnico WHERE id_tecnico = :id_tecnico";
     $stmtDel = $pdo->prepare($sqlDel);
     $stmtDel->execute(["id_tecnico" => $id_tecnico]);
 
-    // Preparar statement único para insertar con fecha_asig
+    // Sentencia para insertar con fecha_asig
     $sqlInsPerm = "INSERT INTO permisos_tecnico (id_tecnico, id_permiso, fecha_asig)
                    VALUES (:id_tecnico, :id_permiso, NOW())";
     $stmtInsPerm = $pdo->prepare($sqlInsPerm);
 
     if ($id_rol == 1) {
-        // Administrador: asignar TODOS los permisos del sistema
+        // Administrador: asignar todos los permisos del sistema
         $sqlTodos = "SELECT id_permiso FROM permisos";
         $stmtTodos = $pdo->query($sqlTodos);
         $todosPermisos = $stmtTodos->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -101,8 +103,7 @@ try {
         }
 
     } else {
-        // Rol distinto de 1 y sin permisos manuales:
-        // Asignar permisos por categoría + permisos base obligatorios
+        // Rol distinto de 1 y sin permisos manuales, deberá asignar permisos por categoría + permisos base obligatorios
         $sqlPermCat = "SELECT id_permiso FROM permisos WHERE id_categoria = :id_categoria";
         $stmtPermCat = $pdo->prepare($sqlPermCat);
         $stmtPermCat->execute(["id_categoria" => $id_categoria]);
@@ -121,7 +122,7 @@ try {
 
     echo json_encode(["status" => "ok", "message" => "Técnico modificado correctamente"]);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) { // Manejo de excepciones
     error_log("Error al modificar técnico: " . $e->getMessage());
     echo json_encode(["status" => "error", "message" => "Error al modificar técnico"]);
 }

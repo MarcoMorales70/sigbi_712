@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
+import InputGenerico from "./InputGenerico";
+import InputSelectRol from "./InputSelectRol";
+import InputSelectEstados from "./InputSelectEstados";
 
 function RegistrarTecnicos() {
     const { setModuloActual, setSubModuloActual, permisos } = useGlobal();
@@ -14,13 +17,11 @@ function RegistrarTecnicos() {
     const [success, setSuccess] = useState(false);
     const [codigoTemp, setCodigoTemp] = useState("");
 
-    const tienePermisoRegistrar = permisos.includes(5); // 5 = ID del permiso "Registrar técnicos"
+    const tienePermisoRegistrar = permisos.includes(5); // id_permiso = 5; "Registrar técnicos"
 
     useEffect(() => {
         if (tienePermisoRegistrar) {
-            fetch("http://localhost/sigbi_712/api/consulta_5.php", {
-                credentials: "include"
-            })
+            fetch("http://localhost/sigbi_712/api/consulta_roles_estados.php", { credentials: "include" })
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === "ok") {
@@ -58,14 +59,14 @@ function RegistrarTecnicos() {
 
             if (data.status === "ok") {
                 setMensaje(data.message);
-                setCodigoTemp(data.codigo_temp); // guardar el código temporal
+                setCodigoTemp(data.codigo_temp);
                 setSuccess(true);
             } else if (data.status === "warning") {
-                setMensaje("⚠️ " + data.message);
+                setMensaje("\u26A0" + data.message);
                 setCodigoTemp(data.codigo_temp);
                 setSuccess(true);
             } else {
-                setMensaje("❌ " + data.message);
+                setMensaje("\u274C" + data.message);
             }
         } catch {
             setMensaje("Error de conexión con el servidor.");
@@ -76,7 +77,6 @@ function RegistrarTecnicos() {
         return <p>Acceso denegado. No tiene permiso para registrar técnicos.</p>;
     }
 
-    // ✅ Si ya se registró con éxito, ocultamos el formulario y mostramos el código
     if (success) {
         return (
             <div className="sesion-form">
@@ -95,41 +95,32 @@ function RegistrarTecnicos() {
     return (
         <div className="sesion-form">
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>ID Técnico</label>
-                    <input
-                        type="text"
-                        value={idTecnico}
-                        onChange={(e) => setIdTecnico(e.target.value)}
-                        placeholder="Ingresa ID de 7 dígitos"
-                    />
-                </div>
 
-                <div className="form-group">
-                    <label>Rol</label>
-                    <select value={idRol} onChange={(e) => setIdRol(e.target.value)}>
-                        <option value="">Seleccione un rol</option>
-                        {roles.map((rol) => (
-                            <option key={rol.id_rol} value={rol.id_rol}>
-                                {rol.rol}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <InputGenerico
+                    value={idTecnico}
+                    setValue={setIdTecnico}
+                    label="Número de empleado"
+                    maxLength={7}
+                    allowedChars="0-9"
+                    placeholder="7120000"
+                    title="Debe contener exactamente 7 dígitos numéricos"
+                />
 
-                <div className="form-group">
-                    <label>Estado</label>
-                    <select value={idEstado} onChange={(e) => setIdEstado(e.target.value)}>
-                        <option value="">Seleccione un estado</option>
-                        {estados.map((estado) => (
-                            <option key={estado.id_estado} value={estado.id_estado}>
-                                {estado.estado}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <InputSelectRol
+                    roles={roles}
+                    idRol={idRol}
+                    setIdRol={setIdRol}
+                />
 
-                {/* ✅ Aquí aplicamos el mismo estilo que en ModificarTecnicos */}
+                <InputSelectEstados
+                    estados={estados} // Array de estados que devuelve la api
+                    idEstado={idEstado}     // Estado actual del bien
+                    setIdEstado={setIdEstado}
+                    estadoActualText="" // Texto del estado actual para mostrar en el input 
+                    idEntidad={2}   // Se define la entidad, id_entidad=2; corrsponde a los estados del técnico
+                    label="Estado del técnico"  // Etiqueta del input
+                />
+
                 {mensaje && (
                     <div className={success ? "success" : "error"}>
                         {mensaje}

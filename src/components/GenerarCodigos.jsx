@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
+import InputGenerico from "./InputGenerico";
 
 function GenerarCodigos() {
     const { setModuloActual, setSubModuloActual } = useGlobal();
@@ -28,11 +29,11 @@ function GenerarCodigos() {
 
             if (data.status === "ok" && data.codigo) {
                 setCodigoGenerado(data.codigo);
-                setSuccess("✅ Código generado correctamente.");
+                setSuccess("\u2705 Código generado correctamente.");
             } else {
                 setError(data.message || "Error al generar código.");
             }
-        } catch (err) {
+        } catch {
             setError("Error de conexión con el servidor.");
         } finally {
             setLoading(false);
@@ -48,17 +49,20 @@ function GenerarCodigos() {
         <div className="sesion-form">
             {!codigoGenerado && (
                 <form onSubmit={handleGenerar}>
-                    <div className="form-group">
-                        <label>ID Técnico</label>
-                        <input
-                            type="text"
-                            value={idTecnico}
-                            onChange={(e) => setIdTecnico(e.target.value)}
-                            placeholder="Ingresa el ID del técnico"
-                        />
-                    </div>
+
+                    <InputGenerico
+                        value={idTecnico}
+                        setValue={setIdTecnico}
+                        label="Número de empleado"
+                        maxLength={7}
+                        allowedChars="0-9"
+                        placeholder="7120000"
+                        title="Debe contener exactamente 7 dígitos numéricos"
+                    />
+
                     {error && <div className="error">{error}</div>}
                     {success && <div className="success">{success}</div>}
+
                     <div className="form-buttons">
                         <button type="submit" disabled={loading}>
                             {loading ? "Generando..." : "Generar código"}

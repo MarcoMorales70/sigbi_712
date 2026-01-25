@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
+import InputGenerico from "./InputGenerico";
+import InputSelectRol from "./InputSelectRol";
+import InputSelectEstados from "./InputSelectEstados";
 
 function ModificarTecnicos() {
     const { permisos, setModuloActual, setSubModuloActual, tecnicoSeleccionado, setTecnicoSeleccionado } = useGlobal();
@@ -16,9 +19,9 @@ function ModificarTecnicos() {
     const [loading, setLoading] = useState(false);
     const [rolOriginal, setRolOriginal] = useState(null);
 
-    const tienePermisoModificar = permisos.includes(7); // permiso id=7
+    const tienePermisoModificar = permisos.includes(7); // id_permiso=7 "Modificar Técnicos"
 
-    // Buscar técnico manualmente (cuando no viene de ConsultarTecnicos)
+    // Buscar técnico manualmente o directo del subModulo/acción
     const handleBuscar = async (e) => {
         e.preventDefault();
         setError("");
@@ -47,14 +50,14 @@ function ModificarTecnicos() {
                     setSubModuloActual(null);
                 }, 3000);
             }
-        } catch (err) {
+        } catch {
             setError("Error de conexión con el servidor.");
         } finally {
             setLoading(false);
         }
     };
 
-    // 🔎 Nuevo: cargar técnico automáticamente si viene desde ConsultarTecnicos.jsx
+    // Cargar técnico automáticamente si viene desde ConsultarTecnicos.jsx
     useEffect(() => {
         if (tecnicoSeleccionado) {
             fetch("http://localhost/sigbi_712/api/consulta_7.php", {
@@ -78,7 +81,7 @@ function ModificarTecnicos() {
         }
     }, [tecnicoSeleccionado]);
 
-    // Cargar permisos si se activa el radioboton
+    // Cargar permisos si se activa el radiobutton
     useEffect(() => {
         if (modificarPermisos && datosTecnico) {
             fetch("http://localhost/sigbi_712/api/consulta_permisos_tecnico.php", {
@@ -127,7 +130,7 @@ function ModificarTecnicos() {
             const data = await response.json();
 
             if (data.status === "ok") {
-                setSuccess("✅ Técnico modificado correctamente.");
+                setSuccess("\u2705 Técnico modificado correctamente.");
             } else {
                 setError(data.message || "Error al modificar técnico.");
             }
@@ -139,7 +142,7 @@ function ModificarTecnicos() {
                 setLoading(false);
             }, 3000);
 
-        } catch (err) {
+        } catch {
             setError("Error de conexión con el servidor.");
             setTimeout(() => {
                 setModuloActual("Control");
@@ -158,20 +161,22 @@ function ModificarTecnicos() {
 
     return (
         <div className="sesion-form">
-            {/* Mostrar formulario de búsqueda solo si no hay tecnicoSeleccionado */}
             {!datosTecnico && !tecnicoSeleccionado && (
                 <form onSubmit={handleBuscar}>
-                    <div className="form-group">
-                        <label>ID Técnico</label>
-                        <input
-                            type="text"
-                            value={idTecnico}
-                            onChange={(e) => setIdTecnico(e.target.value)}
-                            placeholder="Ingresa el ID del técnico"
-                        />
-                    </div>
+
+                    <InputGenerico
+                        value={idTecnico}
+                        setValue={setIdTecnico}
+                        label="Número de empleado"
+                        maxLength={7}
+                        allowedChars="0-9"
+                        placeholder="7120000"
+                        title="Debe contener exactamente 7 dígitos numéricos"
+                    />
+
                     {error && <div className="error">{error}</div>}
                     {success && <div className="success">{success}</div>}
+
                     <div className="form-buttons">
                         <button type="submit" disabled={loading}>
                             {loading ? "Buscando..." : "Buscar"}
@@ -184,38 +189,22 @@ function ModificarTecnicos() {
                 <form onSubmit={handleModificar}>
                     <p><strong>ID Técnico:</strong> {datosTecnico.id_tecnico}</p>
 
-                    <div className="form-group">
-                        <label>Rol</label>
-                        <select
-                            value={datosTecnico.id_rol}
-                            onChange={(e) =>
-                                setDatosTecnico({ ...datosTecnico, id_rol: e.target.value })
-                            }
-                            disabled={modificarPermisos} // 🔒 bloqueado si se está editando permisos
-                        >
-                            {roles.map((rol) => (
-                                <option key={rol.id_rol} value={rol.id_rol}>
-                                    {rol.nombre}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Reuso de InputSelectRol */}
+                    <InputSelectRol
+                        roles={roles}
+                        idRol={String(datosTecnico.id_rol)}
+                        setIdRol={(value) => setDatosTecnico({ ...datosTecnico, id_rol: value })}
+                        label="Rol"
+                    />
 
-                    <div className="form-group">
-                        <label>Estado</label>
-                        <select
-                            value={datosTecnico.id_estado}
-                            onChange={(e) =>
-                                setDatosTecnico({ ...datosTecnico, id_estado: e.target.value })
-                            }
-                        >
-                            {estados.map((estado) => (
-                                <option key={estado.id_estado} value={estado.id_estado}>
-                                    {estado.nombre}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <InputSelectEstados
+                        estados={estados}
+                        idEstado={datosTecnico.id_estado}                  // id_estado real del técnico
+                        setIdEstado={(value) => setDatosTecnico({ ...datosTecnico, id_estado: value })}
+                        estadoActualText={datosTecnico.estado_actual}      // Texto del estado actual 
+                        idEntidad={2}                                      // 2 = Técnicos
+                        label="Estado del técnico"
+                    />
 
                     <div className="form-group">
                         <label>¿Desea modificar permisos?</label>
@@ -227,7 +216,7 @@ function ModificarTecnicos() {
                                     value="no"
                                     checked={!modificarPermisos}
                                     onChange={() => setModificarPermisos(false)}
-                                    disabled={rolCambio} // 🔒 bloqueado si cambió el rol
+                                    disabled={rolCambio}
                                 />
                                 No
                             </label>
@@ -238,7 +227,7 @@ function ModificarTecnicos() {
                                     value="si"
                                     checked={modificarPermisos}
                                     onChange={() => setModificarPermisos(true)}
-                                    disabled={rolCambio} // 🔒 bloqueado si cambió el rol
+                                    disabled={rolCambio}
                                 />
                                 Sí
                             </label>
@@ -294,6 +283,7 @@ function ModificarTecnicos() {
 
                     {error && <div className="error">{error}</div>}
                     {success && <div className="success">{success}</div>}
+
                     <div className="form-buttons">
                         <button type="submit" disabled={loading}>
                             {loading ? "Procesando..." : "Modificar"}

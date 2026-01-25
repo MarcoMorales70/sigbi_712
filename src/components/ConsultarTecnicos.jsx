@@ -43,7 +43,7 @@ function ConsultarTecnicos() {
                 headers = ["ID Técnico", "Rol", "Nombre completo"];
                 rows = tecnicos.map(t => [t.id_tecnico, t.rol, t.nombre_completo]);
             } else {
-                // Exportar solo el técnico seleccionado con datos enriquecidos
+                // Exportar solo el técnico seleccionado con datos enriquecidos con otras tablas (más detalaldo)
                 const response = await fetch(`http://localhost/sigbi_712/api/consulta_6.php?id_tecnico=${seleccionado}`, {
                     credentials: "include"
                 });
@@ -89,11 +89,22 @@ function ConsultarTecnicos() {
                 }
             }
 
+            // Función para escapar valores CSV
+            const escapeCSV = (value) => {
+                if (value === null || value === undefined) return "";
+                const str = value.toString();
+                // Si contiene coma, salto de línea o comillas, se envuelve en comillas dobles, para que no desfase las columnas vs los valores
+                if (/[",\r\n]/.test(str)) {
+                    return `"${str.replace(/"/g, '""')}"`;
+                }
+                return str;
+            };
+
             // Generar CSV
             let csvContent = "\uFEFF";
-            csvContent += headers.join(",") + "\r\n";
+            csvContent += headers.map(escapeCSV).join(",") + "\r\n";
             rows.forEach(r => {
-                csvContent += r.join(",") + "\r\n";
+                csvContent += r.map(escapeCSV).join(",") + "\r\n";
             });
 
             const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -112,15 +123,15 @@ function ConsultarTecnicos() {
 
     const handleModificar = () => {
         if (seleccionado) {
-            setTecnicoSeleccionado(seleccionado); // guardar id_tecnico en global
-            setSubModuloActual("Modificar Técnicos"); // cambiar vista
+            setTecnicoSeleccionado(seleccionado); // Guardar id_tecnico en global
+            setSubModuloActual("Modificar Técnicos"); // Cambiar vista a componente ModificarTecnicos.jsx
         }
     };
 
     const handleEliminar = () => {
         if (seleccionado) {
-            setTecnicoSeleccionado(seleccionado); // guardar id_tecnico en global
-            setSubModuloActual("Eliminar Técnicos"); // cambiar vista
+            setTecnicoSeleccionado(seleccionado); // Guardar id_tecnico en global
+            setSubModuloActual("Eliminar Técnicos"); // Cambiar vista a componente EliminarTecnicos.jsx
         }
     };
 
@@ -128,7 +139,7 @@ function ConsultarTecnicos() {
         <div className="sesion-form">
             <h2>Lista de Técnicos</h2>
             {mensaje && <p className="error">{mensaje}</p>}
-
+            {/* Se muestra la tabla solo con ciertos campos*/}
             <table className="tabla-estandar seleccion-unica">
                 <thead>
                     <tr>
@@ -136,7 +147,7 @@ function ConsultarTecnicos() {
                         <th>ID Técnico</th>
                         <th>Rol</th>
                         <th>Nombre completo</th>
-                        <th>Permisos</th>
+                        {/*<th>Permisos</th>*/}
                     </tr>
                 </thead>
                 <tbody>
@@ -156,7 +167,7 @@ function ConsultarTecnicos() {
                             <td>{tec.id_tecnico}</td>
                             <td>{tec.rol}</td>
                             <td>{tec.nombre_completo}</td>
-                            <td>Consultar</td>
+                            {/*<td>Consultar</td>*/}
                         </tr>
                     ))}
                 </tbody>

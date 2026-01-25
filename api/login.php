@@ -1,20 +1,24 @@
 <?php
-require_once __DIR__ . "/cors.php";
-include __DIR__ . "/conexion.php"; // aquí ya tienes $pdo definido
 
-// =========================
-// INICIAR SESIÓN PHP
-// =========================
-// Si ya existía una sesión activa, la limpiamos para evitar conflictos
+// Implementacion de cabeceras
+require_once __DIR__ . "/cors.php";
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+include __DIR__ . "/conexion.php"; // Con PDO definido
+
+// Iniciar sesión con php
 if (session_status() === PHP_SESSION_ACTIVE) {
     session_unset();
     session_destroy();
 }
 session_start();
 
-// =========================
-// RECIBIR DATOS
-// =========================
+// Recibir datos
 $data = json_decode(file_get_contents("php://input"), true);
 $id_tecnico = $data['id_tecnico'] ?? null;
 $contrasena = $data['contrasena'] ?? null;
@@ -24,11 +28,18 @@ if (!$id_tecnico || !$contrasena) {
     exit;
 }
 
-try {
-    // =========================
-    // CONSULTA PRINCIPAL
-    // =========================
-    $sql = "SELECT t.id_tecnico, t.contrasena, t.id_estado, t.id_rol, t.id_categoria,
+// Validar contraseña
+// Mínimo 8 caracteres, al menos una mayúscula, una minúscula, un número y un carácter especial
+$regex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
+if (!preg_match($regex, $contrasena)) {
+    echo json_encode(["status" => "error", "message" => "La contraseña no cumple con los requisitos de seguridad."]);
+    exit;
+}
+
+try { 
+
+    // Consulta
+    $sql = "SELECT t.id_tecnico, t.contrasena, t.id_estado, t.id_rol, t.id_categoria, 
                    u.id_usuario, u.usuario, u.a_paterno, u.a_materno, u.correo,
                    u.id_cargo, u.id_direccion, u.id_sede, u.id_edificio, u.id_nivel,
                    r.rol, c.categoria
@@ -47,25 +58,28 @@ try {
         exit;
     }
 
-    // =========================
-    // VALIDAR CONTRASEÑA (con hash)
-    // =========================
+    // Validación si contraseña vacia o null, solo existe contraseña cuando el técnico termino su registro
+    if (empty($tecnico['contrasena'])) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "El usuario aún no ha completado su registro. No puede iniciar sesión."
+        ]);
+        exit;
+    }
+
+    // Validar contraseña con hash
     if (!password_verify($contrasena, $tecnico['contrasena'])) {
         echo json_encode(["status" => "error", "message" => "Contraseña incorrecta."]);
         exit;
     }
 
-    // =========================
-    // VALIDAR ESTADO
-    // =========================
+    // Validar estado, el usuaario debe estar activo para poder iniciar sesión
     if ((int)$tecnico['id_estado'] !== 6) {
         echo json_encode(["status" => "error", "message" => "El usuario está inactivo."]);
         exit;
     }
 
-    // =========================
-    // ARMAR IDENTIDAD
-    // =========================
+    // Se construye la identidad
     $nombre_completo = trim($tecnico['usuario'] . ' ' . $tecnico['a_paterno'] . ' ' . $tecnico['a_materno']);
 
     $identidad = [
@@ -84,9 +98,7 @@ try {
         "id_nivel"     => (int)$tecnico['id_nivel']
     ];
 
-    // =========================
-    // OBTENER PERMISOS
-    // =========================
+    // Se obtienen los permisos
     $sqlPerm = "SELECT id_permiso FROM permisos_tecnico WHERE id_tecnico = :id_tecnico";
     $stmtPerm = $pdo->prepare($sqlPerm);
     $stmtPerm->execute(["id_tecnico" => $id_tecnico]);
@@ -95,15 +107,12 @@ try {
         $permisos[] = (int)$row['id_permiso'];
     }
 
-    // =========================
-    // GUARDAR EN SESIÓN PHP
-    // =========================
+    // Se guardan todos los datos y permisos del técnico en sesión
     $_SESSION['identidad'] = $identidad;
     $_SESSION['permisos'] = $permisos;
+    $_SESSION['id_tecnico'] = (int)$tecnico['id_tecnico']; 
 
-    // =========================
-    // RESPUESTA FINAL
-    // =========================
+    // Respuesta al frontend
     echo json_encode([
         "status" => "ok",
         "message" => "Inicio de sesión exitoso.",
@@ -111,7 +120,7 @@ try {
         "permisos" => $permisos
     ], JSON_UNESCAPED_UNICODE);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) {  // Capturamos excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error interno en el servidor: " . $e->getMessage()

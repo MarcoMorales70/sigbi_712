@@ -1,6 +1,5 @@
 /* FORMULARIO PRINCIPAL */
 .sesion-form {
-    background: #fff;
     padding: 30px;
     border-radius: 12px;
     max-width: 1100px;
@@ -326,4 +325,18 @@ input[type="radio"] {
     padding: 8px;
     margin-top: 10px;
     border-radius: 4px;
+}
+
+
+
+/* ----- */
+
+/* css para el formulario genérico */
+.input-error {
+    border: 1px solid red;
+}
+
+.error-text {
+    color: red;
+    font-size: 0.8rem;
 }

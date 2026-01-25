@@ -1,25 +1,34 @@
 <?php
-require_once __DIR__ . "/cors.php";
-session_start();
-include __DIR__ . "/conexion.php";
 
-// =========================
-// VALIDAR SESIÓN Y PERMISO
-// =========================
+// Implementacion de cabeceras
+require_once __DIR__ . "/cors.php";
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+session_start();
+include __DIR__ . "/conexion.php"; // Con PDO definido
+
+// Se valida el inicio de sesión
 if (!isset($_SESSION['identidad'])) {
     echo json_encode(["status" => "error", "message" => "Sesión no iniciada."]);
     exit;
 }
 
+// Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-if (!in_array(6, $permisos)) { // 6 = ID del permiso "Consultar técnicos"
+$permisosRequeridos = [6]; 
+$interseccion = array_intersect($permisosRequeridos, $permisos);
+
+if (empty($interseccion)) {
     echo json_encode(["status" => "error", "message" => "Acceso denegado."]);
     exit;
 }
 
-// =========================
-// VALIDAR PARÁMETRO
-// =========================
+// Se valida que exista un id_tecnico seleccionado
 $id_tecnico = $_GET['id_tecnico'] ?? null;
 if (!$id_tecnico) {
     echo json_encode(["status" => "error", "message" => "ID técnico no proporcionado."]);
@@ -27,9 +36,7 @@ if (!$id_tecnico) {
 }
 
 try {
-    // =========================
-    // CONSULTA PRINCIPAL
-    // =========================
+    // Consulta enriquecida con otras tablas
 $sql = "SELECT 
             u.id_usuario,
             u.usuario,
@@ -62,9 +69,7 @@ $sql = "SELECT
         exit;
     }
 
-    // =========================
-    // CONSULTA PERMISOS
-    // =========================
+    // Consulta de permisos
     $sqlPermisos = "SELECT p.permiso
                     FROM permisos_tecnico pt
                     JOIN permisos p ON pt.id_permiso = p.id_permiso
@@ -74,9 +79,7 @@ $sql = "SELECT
     $stmtPerm->execute(["id_tecnico" => $id_tecnico]);
     $permisos = $stmtPerm->fetchAll(PDO::FETCH_COLUMN);
 
-    // =========================
-    // RESPUESTA JSON
-    // =========================
+    // Respuesta json
     $tecnico["permisos"] = $permisos;
 
     echo json_encode([

@@ -1,27 +1,34 @@
 <?php
+
+// Implementacion de cabeceras
 require_once __DIR__ . "/cors.php";
-require_once __DIR__ . "/conexion.php";
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 session_start();
+include __DIR__ . "/conexion.php"; // Con PDO definido
 
-header("Content-Type: application/json; charset=UTF-8");
+// Se valida el inicio de sesión
+if (!isset($_SESSION['identidad'])) {
+    echo json_encode(["status" => "error", "message" => "Sesión no iniciada."]);
+    exit;
+}
 
-// =========================
-// VALIDAR SESIÓN Y PERMISO
-// =========================
+// Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-if (!in_array(7, $permisos)) { // 7 = ID del permiso "Actualizar técnico"
+$permisosRequeridos = [7]; 
+$interseccion = array_intersect($permisosRequeridos, $permisos);
+
+if (empty($interseccion)) {
     echo json_encode(["status" => "error", "message" => "Acceso denegado."]);
     exit;
 }
 
-if (!isset($_SESSION['identidad'])) {
-    echo json_encode(["status" => "error", "message" => "Sesión no iniciada"]);
-    exit;
-}
-
-// =========================
-// RECIBIR DATOS
-// =========================
+// Recibir datos
 $data = json_decode(file_get_contents("php://input"), true);
 $id_tecnico = $data['id_tecnico'] ?? null;
 
@@ -31,9 +38,7 @@ if (!$id_tecnico) {
 }
 
 try {
-    // =========================
-    // BUSCAR TÉCNICO
-    // =========================
+    // Consulta para buscar al técnico
     $sqlTec = "SELECT id_tecnico, id_rol, id_categoria, id_estado 
                FROM tecnicos 
                WHERE id_tecnico = :id_tecnico";
@@ -46,35 +51,19 @@ try {
         exit;
     }
 
-    // =========================
-    // TRAER ROLES
-    // =========================
-    $sqlRoles = "SELECT id_rol, rol FROM roles";
+    // Consulta para obtener lo roles
+    $sqlRoles = "SELECT id_rol, rol FROM roles ORDER BY rol ASC";
     $stmtRoles = $pdo->query($sqlRoles);
-    $roles = [];
-    foreach ($stmtRoles->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        $roles[] = [
-            "id_rol" => (int)$row["id_rol"],
-            "nombre" => $row["rol"] // alias para frontend
-        ];
-    }
+    $roles = $stmtRoles->fetchAll(PDO::FETCH_ASSOC);
 
-    // =========================
-    // TRAER ESTADOS (solo id_entidad=2)
-    // =========================
-    $sqlEstados = "SELECT id_estado, estado FROM estados WHERE id_entidad = 2";
+    // Consulta para obtener los estados
+    $sqlEstados = "SELECT id_estado, estado, id_entidad 
+                   FROM estados 
+                   ORDER BY estado ASC";
     $stmtEstados = $pdo->query($sqlEstados);
-    $estados = [];
-    foreach ($stmtEstados->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        $estados[] = [
-            "id_estado" => (int)$row["id_estado"],
-            "nombre" => $row["estado"] // alias para frontend
-        ];
-    }
+    $estados = $stmtEstados->fetchAll(PDO::FETCH_ASSOC);
 
-    // =========================
-    // RESPUESTA JSON
-    // =========================
+    // Respuesta json
     echo json_encode([
         "status" => "ok",
         "tecnico" => $tecnico,
@@ -82,7 +71,7 @@ try {
         "estados" => $estados
     ], JSON_UNESCAPED_UNICODE);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) { // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error en la consulta: " . $e->getMessage()

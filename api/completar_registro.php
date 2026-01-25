@@ -1,24 +1,22 @@
 <?php
+
+// Implementacion de cabeceras
 require_once __DIR__ . "/cors.php";
 
+// Manejo de pre-flight cors
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// =========================
-// CONFIGURACIÓN PHP
-// =========================
+// Configuracion de php para no mostrar errores en pantalla (prueba)
 ini_set('display_errors', 0);
 error_reporting(0);
 
-header("Content-Type: application/json; charset=UTF-8");
 
-include __DIR__ . "/conexion.php"; // aquí ya tienes $pdo definido
+include __DIR__ . "/conexion.php"; // Con PDO definido
 
-// =========================
-// RECIBIR DATOS
-// =========================
+// Recibir datos
 $data = json_decode(file_get_contents("php://input"), true);
 
 $id_tecnico              = $data['id_tecnico'] ?? null;
@@ -29,9 +27,7 @@ $contrasena_confirmacion = $data['contrasena_confirmacion'] ?? null;
 // Normalizar código temporal a mayúsculas
 $codigo_temp_ingresado = $codigo_temp_ingresado ? strtoupper($codigo_temp_ingresado) : null;
 
-// =========================
-// VALIDACIONES BÁSICAS
-// =========================
+// Validaciones básicas
 if (!$id_tecnico || !$codigo_temp_ingresado || !$contrasena || !$contrasena_confirmacion) {
     echo json_encode([
         "status" => "error",
@@ -56,10 +52,13 @@ if (!preg_match("/^[A-Z0-9]{6}$/", $codigo_temp_ingresado)) {
     exit;
 }
 
-if (strlen($contrasena) < 8) {
+// Validar contraseña
+// mínimo 8 caracteres, al menos una mayúscula, una minúscula, un número y un carácter especial
+$regex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
+if (!preg_match($regex, $contrasena)) {
     echo json_encode([
         "status" => "error",
-        "message" => "La contraseña debe tener al menos 8 caracteres."
+        "message" => "La contraseña debe tener mínimo 8 caracteres, incluir mayúscula, minúscula, número y carácter especial."
     ]);
     exit;
 }
@@ -73,9 +72,7 @@ if ($contrasena !== $contrasena_confirmacion) {
 }
 
 try {
-    // =========================
-    // CONSULTAR TÉCNICO
-    // =========================
+    // Consulta
     $sqlTec = "SELECT codigo_temp FROM tecnicos WHERE id_tecnico = :id_tecnico";
     $stmtTec = $pdo->prepare($sqlTec);
     $stmtTec->execute(["id_tecnico" => $id_tecnico]);
@@ -107,9 +104,7 @@ try {
         exit;
     }
 
-    // =========================
-    // ACTUALIZAR REGISTRO
-    // =========================
+    // Actualizar registro
     $hash = password_hash($contrasena, PASSWORD_DEFAULT);
 
     $sqlUpdate = "UPDATE tecnicos SET contrasena = :contrasena, codigo_temp = NULL WHERE id_tecnico = :id_tecnico";
@@ -131,7 +126,7 @@ try {
         ]);
     }
 
-} catch (PDOException $e) {
+} catch (PDOException $e) { // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error interno en el servidor: " . $e->getMessage()

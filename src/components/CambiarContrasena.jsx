@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
+import InputGenerico from "./InputGenerico";
+import InputContrasena from "./InputContrasena";
 
 function CambiarContrasena() {
     const { logout, setModuloActual, setSubModuloActual } = useGlobal();
@@ -10,7 +12,7 @@ function CambiarContrasena() {
     const [passwordNueva, setPasswordNueva] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [error, setError] = useState("");
-    const [step, setStep] = useState(1); // 1 = ingresar credenciales, 2 = nueva contraseña
+    const [step, setStep] = useState(1); // Pasos : 1 = ingresar credenciales, 2 = nueva contraseña
     const [success, setSuccess] = useState(false);
 
     const validarPassword = (pwd) => {
@@ -42,7 +44,7 @@ function CambiarContrasena() {
             const data = await response.json();
 
             if (data.status === "ok") {
-                setStep(2); // habilitar inputs de nueva contraseña
+                setStep(2); // Habilitar inputs de nueva contraseña
             } else {
                 setError(data.message || "Credenciales incorrectas.");
             }
@@ -77,8 +79,7 @@ function CambiarContrasena() {
 
             if (data.status === "ok") {
                 setSuccess(true);
-                // cerrar sesión en frontend y backend
-                await logout();
+                await logout(); // cerrar sesión en frontend y backend
                 setModuloActual("Autenticación");
                 setSubModuloActual(null);
             } else {
@@ -107,73 +108,50 @@ function CambiarContrasena() {
         <div className="sesion-form">
             {step === 1 && (
                 <form onSubmit={handleValidarCredenciales}>
-                    <div className="form-group">
-                        <label>ID Técnico</label>
-                        <input
-                            type="text"
-                            value={idTecnico}
-                            onChange={(e) => setIdTecnico(e.target.value)}
-                            placeholder="Ingresa tu ID de 7 dígitos"
-                        />
-                    </div>
 
-                    <div className="form-group">
-                        <label>Contraseña actual</label>
-                        <input
-                            type="password"
-                            value={passwordActual}
-                            onChange={(e) => setPasswordActual(e.target.value)}
-                            placeholder="Ingresa tu contraseña actual"
-                        />
-                    </div>
+                    <InputGenerico
+                        value={idTecnico}
+                        setValue={setIdTecnico}
+                        label="Número de empleado"
+                        maxLength={7}
+                        allowedChars="0-9"
+                        placeholder="7120000"
+                        title="Debe contener exactamente 7 dígitos numéricos"
+                    />
+
+                    <InputContrasena
+                        contrasena={passwordActual}
+                        setContrasena={setPasswordActual}
+                        label="Contraseña actual" />
 
                     {error && <div className="error">{error}</div>}
 
                     <div className="form-buttons">
                         <button type="submit">Validar credenciales</button>
                     </div>
-
-
-
-
-
                 </form>
             )}
 
             {step === 2 && (
                 <form onSubmit={handleCambiarContrasena}>
-                    <div className="form-group">
-                        <label>Nueva contraseña</label>
-                        <input
-                            type="password"
-                            value={passwordNueva}
-                            onChange={(e) => setPasswordNueva(e.target.value)}
-                            placeholder="Ingresa tu nueva contraseña"
-                        />
-                    </div>
 
-                    <div className="form-group">
-                        <label>Confirmar nueva contraseña</label>
-                        <input
-                            type="password"
-                            value={passwordConfirm}
-                            onChange={(e) => setPasswordConfirm(e.target.value)}
-                            placeholder="Repite tu nueva contraseña"
-                        />
-                    </div>
+                    <InputContrasena
+                        contrasena={passwordNueva}
+                        setContrasena={setPasswordNueva}
+                        label="Nueva contraseña"
+                    />
+
+                    <InputContrasena
+                        contrasena={passwordConfirm}
+                        setContrasena={setPasswordConfirm}
+                        label="Confirmar nueva contraseña"
+                    />
 
                     {error && <div className="error">{error}</div>}
-
 
                     <div className="form-buttons">
                         <button type="submit">Cambiar contraseña</button>
                     </div>
-
-
-
-
-
-
                 </form>
             )}
         </div>

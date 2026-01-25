@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
+import InputGenerico from "./InputGenerico";
 
 function EliminarTecnicos() {
     const { tecnicoSeleccionado, setModuloActual, setSubModuloActual } = useGlobal();
@@ -10,7 +11,7 @@ function EliminarTecnicos() {
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // 🔎 Si viene desde ConsultarTecnicos.jsx y ya hay tecnicoSeleccionado → cargar directo
+    // Mecánica, Si viene desde ConsultarTecnicos.jsx y ya hay tecnicoSeleccionado va a cargar directo
     useEffect(() => {
         if (tecnicoSeleccionado) {
             fetch("http://localhost/sigbi_712/api/consulta_9.php", {
@@ -31,7 +32,7 @@ function EliminarTecnicos() {
         }
     }, [tecnicoSeleccionado]);
 
-    // Buscar técnico manualmente (cuando no viene de ConsultarTecnicos.jsx)
+    // Si se va a buscar el técnico manualmente (no viene de ConsultarTecnicos.jsx)
     const handleBuscar = async (e) => {
         e.preventDefault();
         setError("");
@@ -53,7 +54,7 @@ function EliminarTecnicos() {
             } else {
                 setError(data.message || "Técnico no encontrado.");
             }
-        } catch (err) {
+        } catch {
             setError("Error de conexión con el servidor.");
         } finally {
             setLoading(false);
@@ -77,7 +78,7 @@ function EliminarTecnicos() {
             const data = await response.json();
 
             if (data.status === "ok") {
-                setSuccess("✅ Técnico eliminado correctamente.");
+                setSuccess("\u2705 Técnico eliminado correctamente.");
             } else {
                 setError(data.message || "Error al eliminar técnico.");
             }
@@ -88,7 +89,7 @@ function EliminarTecnicos() {
                 setLoading(false);
             }, 3000);
 
-        } catch (err) {
+        } catch {
             setError("Error de conexión con el servidor.");
             setTimeout(() => {
                 setModuloActual("Control");
@@ -103,17 +104,20 @@ function EliminarTecnicos() {
             {/* Mostrar formulario inicial solo si no hay tecnicoSeleccionado */}
             {!datosTecnico && !tecnicoSeleccionado && (
                 <form onSubmit={handleBuscar}>
-                    <div className="form-group">
-                        <label>ID Técnico a eliminar</label>
-                        <input
-                            type="text"
-                            value={idTecnico}
-                            onChange={(e) => setIdTecnico(e.target.value)}
-                            placeholder="Ingresa el ID del técnico"
-                        />
-                    </div>
+
+                    <InputGenerico
+                        value={idTecnico}
+                        setValue={setIdTecnico}
+                        label="Número de empleado"
+                        maxLength={7}
+                        allowedChars="0-9"
+                        placeholder="7120000"
+                        title="Debe contener exactamente 7 dígitos numéricos"
+                    />
+
                     {error && <div className="error">{error}</div>}
                     {success && <div className="success">{success}</div>}
+
                     <div className="form-buttons">
                         <button type="submit" disabled={loading}>
                             {loading ? "Buscando..." : "Buscar"}

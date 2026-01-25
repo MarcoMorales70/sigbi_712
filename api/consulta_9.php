@@ -1,27 +1,34 @@
 <?php
+
+// Implementacion de cabeceras
 require_once __DIR__ . "/cors.php";
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 session_start();
-include __DIR__ . "/conexion.php"; 
+include __DIR__ . "/conexion.php"; // Con PDO definido
 
-header("Content-Type: application/json; charset=UTF-8");
-
-// =========================
-// VALIDAR SESIÓN Y PERMISO
-// =========================
+// Se valida el inicio de sesión
 if (!isset($_SESSION['identidad'])) {
     echo json_encode(["status" => "error", "message" => "Sesión no iniciada."]);
     exit;
 }
 
+// Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-if (!in_array(9, $permisos)) { // 9 = ID del permiso "Eliminar técnicos"
+$permisosRequeridos = [9]; 
+$interseccion = array_intersect($permisosRequeridos, $permisos);
+
+if (empty($interseccion)) {
     echo json_encode(["status" => "error", "message" => "Acceso denegado."]);
     exit;
 }
 
-// =========================
-// RECIBIR DATOS
-// =========================
+// Recibir datos
 $data = json_decode(file_get_contents("php://input"), true);
 $id_tecnico = $data['id_tecnico'] ?? null;
 
@@ -31,9 +38,7 @@ if (!$id_tecnico) {
 }
 
 try {
-    // =========================
-    // BUSCAR TÉCNICO
-    // =========================
+    // Consultar técnico
     $sql = "SELECT t.id_tecnico, t.id_rol, r.rol AS nombre_rol, t.id_estado, e.estado AS nombre_estado
             FROM tecnicos t
             INNER JOIN roles r ON t.id_rol = r.id_rol
@@ -48,16 +53,14 @@ try {
         exit;
     }
 
-    // =========================
-    // RESPUESTA JSON
-    // =========================
+    // Respuesta json
     echo json_encode([
         "status" => "ok",
         "tecnico" => $tecnico,
         "message" => "Técnico encontrado. Confirme si desea eliminar."
     ], JSON_UNESCAPED_UNICODE);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) { // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error en la consulta: " . $e->getMessage()
