@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/sigbi_712/static/css/main.87dd02c8.css",
-    "main.js": "/sigbi_712/static/js/main.ccebf34c.js",
+    "main.css": "/sigbi_712/static/css/main.8957369f.css",
+    "main.js": "/sigbi_712/static/js/main.e6bbf66b.js",
     "static/js/453.c7b28319.chunk.js": "/sigbi_712/static/js/453.c7b28319.chunk.js",
     "static/media/logo_sict.png": "/sigbi_712/static/media/logo_sict.ec8ddedaed50eef1e9f3.png",
     "index.html": "/sigbi_712/index.html",
-    "main.87dd02c8.css.map": "/sigbi_712/static/css/main.87dd02c8.css.map",
-    "main.ccebf34c.js.map": "/sigbi_712/static/js/main.ccebf34c.js.map",
+    "main.8957369f.css.map": "/sigbi_712/static/css/main.8957369f.css.map",
+    "main.e6bbf66b.js.map": "/sigbi_712/static/js/main.e6bbf66b.js.map",
     "453.c7b28319.chunk.js.map": "/sigbi_712/static/js/453.c7b28319.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.87dd02c8.css",
-    "static/js/main.ccebf34c.js"
+    "static/css/main.8957369f.css",
+    "static/js/main.e6bbf66b.js"
   ]
 }
