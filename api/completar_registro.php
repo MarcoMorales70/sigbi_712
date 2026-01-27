@@ -27,7 +27,7 @@ $contrasena_confirmacion = $data['contrasena_confirmacion'] ?? null;
 // Normalizar código temporal a mayúsculas
 $codigo_temp_ingresado = $codigo_temp_ingresado ? strtoupper($codigo_temp_ingresado) : null;
 
-// Validaciones básicas
+// Validaciones y respuestas json
 if (!$id_tecnico || !$codigo_temp_ingresado || !$contrasena || !$contrasena_confirmacion) {
     echo json_encode([
         "status" => "error",
@@ -63,6 +63,7 @@ if (!preg_match($regex, $contrasena)) {
     exit;
 }
 
+// Validación de igualdad
 if ($contrasena !== $contrasena_confirmacion) {
     echo json_encode([
         "status" => "error",

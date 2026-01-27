@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import "../styles/Formularios.css";
 import Hardware from "./Hardware";
 import InputGenerico from "./InputGenerico";
-import { useGlobal } from "../context/ContenedorGlobal"; // Se importa el hook para cambiar de módulo y submódulo
+import { useGlobal } from "../context/ContenedorGlobal";
 
 function ModificarBajas() {
 
@@ -10,8 +10,6 @@ function ModificarBajas() {
     const [bajas, setBajas] = useState([]);
     const [id_baja_actual, setIdBajaActual] = useState(null);
     const [baja_actual, setBajaActual] = useState("");
-    //const [total_dictamenes_actual, setTotalDictamenesActual] = useState(0);
-    //const [total_bienes_actual, setTotalBienesActual] = useState(0);
     const [dictamenes, setDictamenes] = useState([]);
     const [bienes, setBienes] = useState([]);
     const [bienesFiltrados, setBienesFiltrados] = useState([]);
@@ -56,8 +54,6 @@ function ModificarBajas() {
                 setDictamenes(data.dictamenes || []);
                 setBienes(data.bienes || []);
                 setBajaActual(data.baja_actual);
-                //setTotalDictamenesActual(data.total_dictamenes_actual);
-                //setTotalBienesActual(data.total_bienes_actual);
                 setPaso(2);
             } else {
                 setError(data.message || "Error al consultar dictámenes.");

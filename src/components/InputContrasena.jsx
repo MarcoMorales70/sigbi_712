@@ -34,6 +34,7 @@ function InputContrasena({ contrasena, setContrasena, label, readOnly = false })
                 title="Mínimo 8 caracteres, incluir mayúscula, minúscula, número y carácter especial"
             />
 
+            {/* Listado de validacion */}
             <ul className="password-requisitos">
                 <li style={{ color: passwordChecks.length ? "green" : "red" }}>
                     {passwordChecks.length ? "\u2714" : "\u2718"} Mínimo 8 caracteres

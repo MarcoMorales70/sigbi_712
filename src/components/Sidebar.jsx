@@ -7,9 +7,7 @@ function Sidebar() {
 
     const { permisos, subModuloActual, setSubModuloActual, moduloActual, setModuloActual, setIdentidad, identidad } = useGlobal();
 
-    // ============================
-    // 1. Construir menú dinámico
-    // ============================
+    // Menú dinamico
     const menuDinamico = {};
 
     permisos.forEach(idPermiso => {
@@ -29,29 +27,25 @@ function Sidebar() {
         menuDinamico[modulo][seccion].push(titulo);
     });
 
-    // ============================
-    // 2. Obtener secciones del módulo actual
-    // ============================
+    // Obtener las secciones del módulo actual
     const secciones = menuDinamico[moduloActual] || {};
 
-    // ============================
-    // 3. Acción de cerrar sesión
-    // ============================
+    // Bloque para cerrar la sesión 
     const handleLogout = async () => {
         try {
             const response = await fetch("http://localhost/sigbi_712/api/logout.php", {
                 method: "POST",
-                credentials: "include"   // 👈 importante: envía la cookie PHPSESSID
+                credentials: "include"   // Se envía la cookie PHPSESSID a la api
             });
 
             const data = await response.json();
-            console.log("Logout backend:", data);
+            // console.log("Logout backend:", data); // Mensaje de apoyo
 
         } catch (error) {
             console.error("Error al cerrar sesión en backend:", error);
         }
 
-        // ✅ Limpiar estado global en frontend
+        // Limpiar estado global en frontend
         setIdentidad(null);
         setModuloActual("Autenticación");
         setSubModuloActual("Iniciar sesión");
@@ -69,7 +63,7 @@ function Sidebar() {
 
                     if (seccion === moduloActual) return null;
 
-                    // Acción directa (sin sección)
+                    // Acción directa, cuando una acción no corresponde a un grupo especifico o sección
                     if (seccion === "null" || seccion === null) {
                         return items.map(item => (
                             <li
@@ -82,7 +76,7 @@ function Sidebar() {
                         ));
                     }
 
-                    // ✅ Sección con submenú
+                    // Sección con algun aacción
                     return (
                         <li key={seccion} className="sidebar-seccion">
 
@@ -91,7 +85,7 @@ function Sidebar() {
                                 className="sidebar-seccion-titulo"
                                 onClick={() => {
                                     setModuloActual(seccion);
-                                    setSubModuloActual(null); // limpiar submódulo
+                                    setSubModuloActual(null);
                                 }}
                             >
                                 {seccion}
@@ -115,7 +109,7 @@ function Sidebar() {
 
             </ul>
 
-            {/* ✅ Botón de cerrar sesión solo si hay identidad */}
+            {/* Botón de cerrar sesión, cuando hay identidad */}
             {identidad && (
                 <div className="sidebar-footer">
                     <button className="logout-btn" onClick={handleLogout}>

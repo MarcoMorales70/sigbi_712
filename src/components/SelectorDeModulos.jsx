@@ -7,7 +7,7 @@ function SelectorDeModulos() {
     const { permisos, moduloActual, setModuloActual } = useGlobal();
 
     // Obtener módulos reales desde permisos
-    let modulos = obtenerModulosDesdePermisos(permisos)
+    let modulos = obtenerModulosDesdePermisos(permisos) // Del archivo permisosUtil.php 
         .filter(m => m !== "Autenticación");
 
     return (

@@ -20,7 +20,7 @@ if (!isset($_SESSION['identidad'])) {
 
 // Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-$permisosRequeridos = [5]; 
+$permisosRequeridos = [5, 7]; 
 $interseccion = array_intersect($permisosRequeridos, $permisos);
 
 if (empty($interseccion)) {

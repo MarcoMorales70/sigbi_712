@@ -1,34 +1,34 @@
 <?php
+
+// Implementacion de cabeceras
 require_once __DIR__ . "/cors.php";
 
-// =========================
-// MANEJO DE PRE-FLIGHT CORS
-// =========================
+// Manejo de pre-flight cors
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
 session_start();
-include __DIR__ . "/conexion.php"; // aquí ya tienes $pdo definido
+include __DIR__ . "/conexion.php"; // Con PDO definido
 
-// =========================
-// VALIDAR SESIÓN Y PERMISO
-// =========================
+// Se valida el inicio de sesión
 if (!isset($_SESSION['identidad'])) {
     echo json_encode(["status" => "error", "message" => "Sesión no iniciada."]);
     exit;
 }
 
+// Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-if (!in_array(27, $permisos)) { // 27 = ID del permiso "Consultar Usuarios"
+$permisosRequeridos = [27]; 
+$interseccion = array_intersect($permisosRequeridos, $permisos);
+
+if (empty($interseccion)) {
     echo json_encode(["status" => "error", "message" => "Acceso denegado."]);
     exit;
 }
 
-// =========================
-// OBTENER DATOS DEL BODY
-// =========================
+// Recibir y asignar datos
 $dataRaw = file_get_contents("php://input");
 $data = json_decode($dataRaw, true);
 
@@ -44,9 +44,7 @@ try {
     $sql = "";
     $params = [];
 
-    // =========================
-    // CONSULTA SEGÚN OPCIÓN
-    // =========================
+    // Consulta según la opción elegida en el frontend
     if ($consulta == 1) {
         // Buscar por id_usuario
         $sql = "SELECT u.id_usuario, u.usuario, u.a_paterno, u.a_materno, u.correo,
@@ -84,7 +82,7 @@ try {
                 WHERE u.id_direccion = ?";
         $params = [$id_direccion];
     } elseif ($consulta == 4) {
-        // Buscar por sede + edificio + nivel
+        // Buscar por sede + edificio + nivel 
         $sql = "SELECT u.id_usuario, u.usuario, u.a_paterno, u.a_materno, u.correo,
                        c.cargo, d.direccion_a, s.acronimo, e.edificio, n.nivel
                 FROM usuarios u
@@ -114,8 +112,9 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
+    // Respuesta json
     echo json_encode(["status" => "ok", "resultados" => $resultados]);
-} catch (Exception $e) {
+} catch (Exception $e) {    // Manejo de excepciones
     echo json_encode(["status" => "error", "message" => "Error en servidor: " . $e->getMessage()]);
 }

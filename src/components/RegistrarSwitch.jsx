@@ -1,15 +1,12 @@
 import { useGlobal } from "../context/ContenedorGlobal";
 import { useState } from "react";
 import "../styles/Formularios.css";
-import InputSelectSedes from "./InputSelectSedes";
-import InputSelectEdificios from "./InputSelectEdificios";
-import InputSelectNiveles from "./InputSelectNiveles";
 import InputPuertos from "./InputPuertos";
 import InputGenerico from "./InputGenerico";
+import InputSelectGenerico from "./InputSelectGenerico";
 
 function RegistrarSwitches() {
     const { setModuloActual, setSubModuloActual, permisos } = useGlobal();
-
     const [nomSwitch, setNomSwitch] = useState("");
     const [serieSw, setSerieSw] = useState("");
     const [mac, setMac] = useState("");
@@ -18,20 +15,21 @@ function RegistrarSwitches() {
     const [idEdificio, setIdEdificio] = useState("");
     const [idNivel, setIdNivel] = useState("");
     const [descSwitch, setDescSwitch] = useState("");
-
     const [mensaje, setMensaje] = useState("");
     const [success, setSuccess] = useState(false);
 
-    const tienePermisoRegistrar = permisos.includes(30); // 30 = ID del permiso "Registrar switches"
+    const tienePermisoRegistrar = permisos.includes(30); // id_permiso=30; "Registrar switches"
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMensaje("");
 
+        // Validación de campos 
         if (!nomSwitch || !serieSw || !mac || !puertos || !idSede || !idEdificio || !idNivel) {
             return setMensaje("Todos los campos son obligatorios.");
         }
 
+        // Envio de datos para crear la tabla y registrar el switch
         try {
             const response = await fetch("http://localhost/sigbi_712/api/registrar_switch.php", {
                 method: "POST",
@@ -49,6 +47,7 @@ function RegistrarSwitches() {
                 })
             });
 
+            // Respuesta de la api
             const data = await response.json();
 
             if (data.status === "ok") {
@@ -59,7 +58,7 @@ function RegistrarSwitches() {
                     setSubModuloActual(null);
                 }, 3000);
             } else {
-                setMensaje("❌ " + (data.message || "Error al registrar el switch."));
+                setMensaje("\u274C " + (data.message || "Error al registrar el switch."));
             }
         } catch {
             setMensaje("Error de conexión con el servidor.");
@@ -86,6 +85,7 @@ function RegistrarSwitches() {
         );
     }
 
+    // Captura de datos reutilizando otros componentes
     return (
         <div className="sesion-form">
             <form onSubmit={handleSubmit}>
@@ -93,7 +93,8 @@ function RegistrarSwitches() {
                     value={nomSwitch}
                     setValue={setNomSwitch}
                     label="Nombre del switch"
-                    maxLength={30}
+                    maxLength={9}
+                    allowedChars="a-p1-9_sw"
                     transform="lowercase"
                     placeholder="sw1_ep_pb"
                     title="Respete la nomenclatura"
@@ -106,6 +107,7 @@ function RegistrarSwitches() {
                     maxLength={20}
                     transform="uppercase"
                     placeholder="FDO654387"
+                    title="Máximo 20 caracteres"
                 />
 
                 <InputGenerico
@@ -116,20 +118,59 @@ function RegistrarSwitches() {
                     allowedChars="0-9A-F:"
                     transform="uppercase"
                     placeholder="AA:BB:CC:DD:EE:FF"
+                    title="Respete la nomenclatura"
                 />
 
-                <InputSelectSedes idSede={idSede} setIdSede={setIdSede} />
-                <InputSelectEdificios idEdificio={idEdificio} setIdEdificio={setIdEdificio} />
-                <InputSelectNiveles idNivel={idNivel} setIdNivel={setIdNivel} />
+                <InputSelectGenerico
+                    idSeleccionado={idSede}
+                    setIdSeleccionado={setIdSede}
+                    label="Sede"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_sedes.php"
+                    valueField="id_sede"
+                    displayField="acronimo"
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione una sede"
+                />
 
-                <InputPuertos puertos={puertos} setPuertos={setPuertos} label="Número de puertos" readOnly={false} />
+                <InputSelectGenerico
+                    idSeleccionado={idEdificio}
+                    setIdSeleccionado={setIdEdificio}
+                    label="Edificio"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_edificios.php"
+                    valueField="id_edificio"
+                    displayField="edificio"
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione un edificio"
+                />
+
+                <InputSelectGenerico
+                    idSeleccionado={idNivel}
+                    setIdSeleccionado={setIdNivel}
+                    label="Nivel"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_niveles.php"
+                    valueField="id_nivel"
+                    displayField="nivel"
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione un piso o nivel"
+                />
+
+                <InputPuertos
+                    puertos={puertos}
+                    setPuertos={setPuertos}
+                    label="Número de puertos"
+                    readOnly={false}
+                />
 
                 <InputGenerico
                     value={descSwitch}
                     setValue={setDescSwitch}
                     label="Descripción del switch"
                     maxLength={255}
-                    placeholder="Escriba texto aquí"
+                    placeholder="Escriba su texto aquí"
+                    title="Máximo 255 caracteres"
                 />
 
                 {mensaje && <div className={success ? "success" : "error"}>{mensaje}</div>}

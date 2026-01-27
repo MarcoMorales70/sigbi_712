@@ -19,8 +19,6 @@ import Main from './Main';
 import Sidebar from './Sidebar';
 import SaludoTecnico from './SaludoTecnico';
 
-
-
 function Layout({ children }) {
 
     const { identidad, moduloActual } = useGlobal();
@@ -28,39 +26,35 @@ function Layout({ children }) {
     return (
         <div className="layout">
 
-            {/* ENCABEZADO */}
+            {/* Encabezado */}
             <header>
                 <div className='header1'><TituloSistema /></div>
 
                 <div className='header2'>
                     <div><Logo /></div>
-                    <div><TituloModulo modulo={moduloActual} /></div> {/* Componente dinámico */}
+                    <div><TituloModulo modulo={moduloActual} /></div>
                     <div><NomDirGen /></div>
                 </div>
 
                 <div className='header3'>
                     <div><NomArea /></div>
-                    <div><Actividad modulo={moduloActual} /></div> {/* Componente dinámico */}
-                    <div><NomDirAdm /></div>
+                    <div><Actividad modulo={moduloActual} /></div>
                 </div>
                 <div><SaludoTecnico /></div>
             </header>
 
-            {/* CONTENEDOR PRINCIPAL: SIDEBAR + MAIN */}
+            {/* El contenedor principal contiene el sidebar y el main*/}
             <div className="contenido">
 
-
                 <Sidebar />
-
                 <main className="main">
                     <Main>
-
                         {children}
                     </Main>
                 </main>
             </div>
 
-            {/* PIE DE PÁGINA */}
+            {/* Pie de página */}
             <footer className='footer'>
                 <Footer />
             </footer>

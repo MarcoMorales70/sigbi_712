@@ -3,19 +3,15 @@ import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import InputGenerico from "./InputGenerico";
 import InputSelectIp from "./InputSelectIp";
-import InputSelectTipoBienes from "./InputSelectTipoBienes";
 import InputInventario from "./InputInventario";
 import InputSelectEstados from "./InputSelectEstados";
-import InputSelectPropietarios from "./InputSelectPropietarios";
-import InputSelectUsuarios from "./InputSelectUsuarios";
+import InputSelectGenerico from "./InputSelectGenerico";
 
 function RegistrarBienes() {
     const { setModuloActual, setSubModuloActual } = useGlobal();
-
     const [serieBien, setSerieBien] = useState("");
     const [idIp, setIdIp] = useState("");
     const [idTipo, setIdTipo] = useState("");
-    const [tiposBienes, setTiposBienes] = useState([]);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
@@ -24,42 +20,10 @@ function RegistrarBienes() {
     const [version_soft, setVersion_soft] = useState("");
     const [inventario, setInventario] = useState("");
     const [idEstado, setIdEstado] = useState("");
-    const [estados, setEstados] = useState([]);
     const [idPropietario, setIdPropietario] = useState("");
-    const [propietarios, setPropietarios] = useState([]);
     const [idResg, setIdResg] = useState("");
     const [idUso, setIdUso] = useState("");
     const [sameUser, setSameUser] = useState(false);
-    const [usuarios, setUsuarios] = useState([]);
-
-    // Cargar listas auxiliares
-    useEffect(() => {
-        fetch("http://localhost/sigbi_712/api/consultar_tipo_bienes.php", { credentials: "include" })
-            .then(res => res.json())
-            .then(data => Array.isArray(data) && setTiposBienes(data))
-            .catch(() => setError("⚠️ Error al cargar tipos de bienes."));
-    }, []);
-
-    useEffect(() => {
-        fetch("http://localhost/sigbi_712/api/consultar_estados.php", { credentials: "include" })
-            .then(res => res.json())
-            .then(data => Array.isArray(data) && setEstados(data))
-            .catch(() => setError("⚠️ Error al cargar estados."));
-    }, []);
-
-    useEffect(() => {
-        fetch("http://localhost/sigbi_712/api/consultar_propietarios.php", { credentials: "include" })
-            .then(res => res.json())
-            .then(data => Array.isArray(data) && setPropietarios(data))
-            .catch(() => setError("⚠️ Error al cargar propietarios."));
-    }, []);
-
-    useEffect(() => {
-        fetch("http://localhost/sigbi_712/api/consultar_usuarios.php", { credentials: "include" })
-            .then(res => res.json())
-            .then(data => Array.isArray(data) && setUsuarios(data))
-            .catch(() => setError("⚠️ Error al cargar usuarios."));
-    }, []);
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -80,9 +44,9 @@ function RegistrarBienes() {
         const marcaTrim = (marca || "").trim();
         const modeloTrim = (modelo || "").trim();
         const version_softTrim = (version_soft || "").trim();
-        const inventarioTrim = (inventario || "").trim(); // 👈 protegido contra null
+        const inventarioTrim = (inventario || "").trim();
 
-        // ✅ Regla de negocio: inventario obligatorio solo si el propietario es SICT
+        // Regla de negocio, el inventario es obligatorio solo si el propietario es SICT, cualquier otro no aplica
         if (idPropietario === 1 && !inventarioTrim) {
             setError("El inventario es obligatorio para bienes SICT.");
             return;
@@ -101,7 +65,7 @@ function RegistrarBienes() {
                     marca: marcaTrim,
                     modelo: modeloTrim,
                     version_soft: version_softTrim,
-                    inventario: inventarioTrim || null, // 👈 null si está vacío
+                    inventario: inventarioTrim || null,
                     id_estado: idEstado || null,
                     id_propietario: idPropietario || null,
                     id_resg: idResg || null,
@@ -111,16 +75,16 @@ function RegistrarBienes() {
 
             const data = await res.json();
             if (data.status === "ok") {
-                setSuccess("✅ Bien registrado correctamente.");
+                setSuccess("\u2705 Bien registrado correctamente.");
                 setTimeout(() => {
                     setModuloActual("Hardware");
                     setSubModuloActual(null);
                 }, 3000);
             } else {
-                setError(data.message || "❌ No se pudo registrar el bien.");
+                setError(data.message || "\u274C No se pudo registrar el bien.");
             }
         } catch {
-            setError("⚠️ Error de conexión con el servidor.");
+            setError("\u26A0 Error de conexión con el servidor.");
         } finally {
             setLoading(false);
         }
@@ -140,7 +104,6 @@ function RegistrarBienes() {
                 />
 
                 <InputSelectEstados
-                    estados={estados}
                     idEstado={idEstado}
                     setIdEstado={setIdEstado}
                     estadoActualText=""
@@ -157,9 +120,16 @@ function RegistrarBienes() {
                     />
                 )}
 
-                <InputSelectTipoBienes
-                    idTipo={idTipo}
-                    setIdTipo={setIdTipo}
+                <InputSelectGenerico
+                    idSeleccionado={idTipo}
+                    setIdSeleccionado={setIdTipo}
+                    label="Tipo de bien"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_tipo_bienes.php"
+                    valueField="id_tipo"
+                    displayField="tipo_bien"
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione un tipo"
                 />
 
                 <InputGenerico
@@ -192,25 +162,36 @@ function RegistrarBienes() {
                     placeholder="WINDOWS 11"
                 />
 
-                <InputSelectPropietarios
-                    propietarios={propietarios}
-                    idPropietario={idPropietario}
-                    setIdPropietario={setIdPropietario}
+                <InputSelectGenerico
+                    idSeleccionado={idPropietario}
+                    setIdSeleccionado={setIdPropietario}
+                    label="Propietario"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_propietarios.php"
+                    valueField="id_propietario"
+                    displayField="propietario"
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione el propietario"
                 />
 
                 {/* Solo bienes SICT llevan inventario */}
-                {idPropietario === 1 && (
+                {idPropietario === "1" && (
                     < InputInventario
                         inventario={inventario}
                         setInventario={setInventario}
                     />
                 )}
 
-                <InputSelectUsuarios
-                    usuarios={usuarios}
-                    value={idResg}
-                    setValue={setIdResg}
-                    label="Usuario resguardante"
+                <InputSelectGenerico
+                    idSeleccionado={idResg}
+                    setIdSeleccionado={setIdResg}
+                    label="Resguardante"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_usuarios.php"
+                    valueField="id_usuario"
+                    displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione usuario resguardante"
                 />
 
                 <div className="form-group">
@@ -225,11 +206,17 @@ function RegistrarBienes() {
                 </div>
 
                 {!sameUser && (
-                    <InputSelectUsuarios
-                        usuarios={usuarios}
-                        value={idUso}
-                        setValue={setIdUso}
-                        label="Usuario operador"
+
+                    <InputSelectGenerico
+                        idSeleccionado={idUso}
+                        setIdSeleccionado={setIdUso}
+                        label="Operador"
+                        apiUrl="http://localhost/sigbi_712/api/consultar_usuarios.php"
+                        valueField="id_usuario"
+                        displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
+                        readOnly={false}
+                        showDefaultOption={true}
+                        defaultOptionText="Seleccione usuario operador"
                     />
                 )}
 

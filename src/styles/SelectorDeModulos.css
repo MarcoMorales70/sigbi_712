@@ -14,7 +14,7 @@
     font-size: 16px;
     cursor: pointer;
     user-select: none;
-    transition: background 0.2s;
+    transition: background-color 0.2s;
 }
 
 .modulo-tag:hover {

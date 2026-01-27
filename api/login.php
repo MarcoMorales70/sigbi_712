@@ -120,7 +120,7 @@ try {
         "permisos" => $permisos
     ], JSON_UNESCAPED_UNICODE);
 
-} catch (PDOException $e) {  // Capturamos excepciones
+} catch (PDOException $e) {  // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error interno en el servidor: " . $e->getMessage()

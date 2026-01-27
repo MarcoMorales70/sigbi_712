@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
-import InputSelectRol from "./InputSelectRol";
+import InputSelectGenerico from "./InputSelectGenerico";
 import InputSelectEstados from "./InputSelectEstados";
 
 function RegistrarTecnicos() {
     const { setModuloActual, setSubModuloActual, permisos } = useGlobal();
 
     const [idTecnico, setIdTecnico] = useState("");
-    const [roles, setRoles] = useState([]);
-    const [estados, setEstados] = useState([]);
     const [idRol, setIdRol] = useState("");
     const [idEstado, setIdEstado] = useState("");
     const [mensaje, setMensaje] = useState("");
@@ -18,22 +16,6 @@ function RegistrarTecnicos() {
     const [codigoTemp, setCodigoTemp] = useState("");
 
     const tienePermisoRegistrar = permisos.includes(5); // id_permiso = 5; "Registrar técnicos"
-
-    useEffect(() => {
-        if (tienePermisoRegistrar) {
-            fetch("http://localhost/sigbi_712/api/consulta_roles_estados.php", { credentials: "include" })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "ok") {
-                        setRoles(data.roles || []);
-                        setEstados(data.estados || []);
-                    } else {
-                        setMensaje(data.message);
-                    }
-                })
-                .catch(() => setMensaje("Error al cargar listas de roles/estados"));
-        }
-    }, [tienePermisoRegistrar]);
 
     const validarIdTecnico = (id) => /^\d{7}$/.test(id);
 
@@ -62,11 +44,11 @@ function RegistrarTecnicos() {
                 setCodigoTemp(data.codigo_temp);
                 setSuccess(true);
             } else if (data.status === "warning") {
-                setMensaje("\u26A0" + data.message);
+                setMensaje("\u26A0 " + data.message);
                 setCodigoTemp(data.codigo_temp);
                 setSuccess(true);
             } else {
-                setMensaje("\u274C" + data.message);
+                setMensaje("\u274C " + data.message);
             }
         } catch {
             setMensaje("Error de conexión con el servidor.");
@@ -106,19 +88,23 @@ function RegistrarTecnicos() {
                     title="Debe contener exactamente 7 dígitos numéricos"
                 />
 
-                <InputSelectRol
-                    roles={roles}
-                    idRol={idRol}
-                    setIdRol={setIdRol}
+                <InputSelectGenerico
+                    idSeleccionado={idRol}
+                    setIdSeleccionado={setIdRol}
+                    label="Rol"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_roles.php"
+                    valueField="id_rol"
+                    displayField="rol"
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione un rol"
                 />
 
                 <InputSelectEstados
-                    estados={estados} // Array de estados que devuelve la api
-                    idEstado={idEstado}     // Estado actual del bien
+                    idEstado={idEstado}
                     setIdEstado={setIdEstado}
-                    estadoActualText="" // Texto del estado actual para mostrar en el input 
-                    idEntidad={2}   // Se define la entidad, id_entidad=2; corrsponde a los estados del técnico
-                    label="Estado del técnico"  // Etiqueta del input
+                    estadoActualText=""
+                    idEntidad={2}
+                    label="Estado del técnico"
                 />
 
                 {mensaje && (

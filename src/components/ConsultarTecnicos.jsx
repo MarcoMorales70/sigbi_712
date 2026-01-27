@@ -10,6 +10,7 @@ function ConsultarTecnicos() {
 
     const tienePermisoConsultar = permisos.includes(6); // 6 = ID permiso "Consultar técnicos"
 
+    // Efecto secundario para validar que el tiene permiso
     useEffect(() => {
         if (tienePermisoConsultar) {
             fetch("http://localhost/sigbi_712/api/consultar_tecnicos.php", {
@@ -89,7 +90,7 @@ function ConsultarTecnicos() {
                 }
             }
 
-            // Función para escapar valores CSV
+            // Función para escapar valores CSV y exportar correctamente los campos
             const escapeCSV = (value) => {
                 if (value === null || value === undefined) return "";
                 const str = value.toString();
@@ -123,15 +124,15 @@ function ConsultarTecnicos() {
 
     const handleModificar = () => {
         if (seleccionado) {
-            setTecnicoSeleccionado(seleccionado); // Guardar id_tecnico en global
-            setSubModuloActual("Modificar Técnicos"); // Cambiar vista a componente ModificarTecnicos.jsx
+            setTecnicoSeleccionado(seleccionado);
+            setSubModuloActual("Modificar Técnicos");
         }
     };
 
     const handleEliminar = () => {
         if (seleccionado) {
-            setTecnicoSeleccionado(seleccionado); // Guardar id_tecnico en global
-            setSubModuloActual("Eliminar Técnicos"); // Cambiar vista a componente EliminarTecnicos.jsx
+            setTecnicoSeleccionado(seleccionado);
+            setSubModuloActual("Eliminar Técnicos");
         }
     };
 

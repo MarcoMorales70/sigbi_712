@@ -1,9 +1,9 @@
-import { useState } from "react"; // Hook de React para manejar variables de estado dentro del componente
-import { useGlobal } from "../context/ContenedorGlobal"; // Hook personalizado para acceder a variables compartidas del contexto global
-import "../styles/Formularios.css"; // Importa estilos CSS compartidos para formularios
-import { obtenerModulosDesdePermisos } from "../data/permisosUtils"; // Función que traduce permisos en módulos disponibles
-import InputContrasena from "./InputContrasena"; // Componente reutilizable para campo de contraseña
-import InputGenerico from "./InputGenerico"; // Componente reutilizable para campo de texto genérico
+import { useState } from "react";
+import { useGlobal } from "../context/ContenedorGlobal";
+import "../styles/Formularios.css";
+import { obtenerModulosDesdePermisos } from "../data/permisosUtils";
+import InputContrasena from "./InputContrasena";
+import InputGenerico from "./InputGenerico";
 
 function IniciarSesion() {
     // Definicion de estados iniciales, se extraen funciones del contexto global necesarias para actualizar sus estados
@@ -13,12 +13,12 @@ function IniciarSesion() {
     const [error, setError] = useState("");
 
     const enviarFormulario = async (e) => { // Función asincrona para el envio del formulario
-        e.preventDefault(); // Comportameinto por defecto o recargar la página
-        setError(""); // Limpiar cualquier error previo
+        e.preventDefault();
+        setError("");
 
         if (idTecnico.length !== 7) { // Validación de longitud del numero de empleado
             setError("El número de empleado debe tener exactamente 7 dígitos.");
-            return; // Mostrar el error y detener el proceso
+            return;
         }
 
         try {
@@ -56,7 +56,7 @@ function IniciarSesion() {
         <div className="sesion-form">
             <form onSubmit={enviarFormulario}> {/* Ejecutar la función */}
 
-                <InputGenerico // Componente reutilizable para obtener el id_tecnico
+                <InputGenerico
                     value={idTecnico}
                     setValue={setIdTecnico}
                     label="Número de empleado"
@@ -66,7 +66,7 @@ function IniciarSesion() {
                     title="Debe contener exactamente 7 dígitos numéricos"
                 />
 
-                <InputContrasena    // Componente reutilizable para obtener la contrasena
+                <InputContrasena
                     contrasena={contrasena}
                     setContrasena={setContrasena}
                     label="Contraseña"

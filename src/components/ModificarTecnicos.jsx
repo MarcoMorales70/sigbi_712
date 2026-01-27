@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
-import InputSelectRol from "./InputSelectRol";
+import InputSelectGenerico from "./InputSelectGenerico";
 import InputSelectEstados from "./InputSelectEstados";
 
 function ModificarTecnicos() {
     const { permisos, setModuloActual, setSubModuloActual, tecnicoSeleccionado, setTecnicoSeleccionado } = useGlobal();
     const [idTecnico, setIdTecnico] = useState("");
     const [datosTecnico, setDatosTecnico] = useState(null);
-    const [roles, setRoles] = useState([]);
-    const [estados, setEstados] = useState([]);
     const [modificarPermisos, setModificarPermisos] = useState(false);
     const [permisosDisponibles, setPermisosDisponibles] = useState([]);
     const [permisosSeleccionados, setPermisosSeleccionados] = useState([]);
@@ -21,7 +19,7 @@ function ModificarTecnicos() {
 
     const tienePermisoModificar = permisos.includes(7); // id_permiso=7 "Modificar Técnicos"
 
-    // Buscar técnico manualmente o directo del subModulo/acción
+    // Buscar técnico manualmente
     const handleBuscar = async (e) => {
         e.preventDefault();
         setError("");
@@ -29,20 +27,16 @@ function ModificarTecnicos() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consulta_7.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ id_tecnico: idTecnico, id_permiso: 7 })
-            });
+            const response = await fetch(
+                "http://localhost/sigbi_712/api/consultar_tecnico_especifico.php?id_tecnico=" + idTecnico,
+                { credentials: "include" }
+            );
 
             const data = await response.json();
 
-            if (data.status === "ok" && data.tecnico) {
-                setDatosTecnico(data.tecnico);
-                setRoles(data.roles || []);
-                setEstados(data.estados || []);
-                setRolOriginal(data.tecnico.id_rol);
+            if (data.status === "ok" && data.data) {
+                setDatosTecnico(data.data);
+                setRolOriginal(data.data.id_rol);
             } else {
                 setError(data.message || "Técnico no encontrado.");
                 setTimeout(() => {
@@ -60,19 +54,14 @@ function ModificarTecnicos() {
     // Cargar técnico automáticamente si viene desde ConsultarTecnicos.jsx
     useEffect(() => {
         if (tecnicoSeleccionado) {
-            fetch("http://localhost/sigbi_712/api/consulta_7.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ id_tecnico: tecnicoSeleccionado, id_permiso: 7 })
+            fetch("http://localhost/sigbi_712/api/consultar_tecnico_especifico.php?id_tecnico=" + tecnicoSeleccionado, {
+                credentials: "include"
             })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.status === "ok" && data.tecnico) {
-                        setDatosTecnico(data.tecnico);
-                        setRoles(data.roles || []);
-                        setEstados(data.estados || []);
-                        setRolOriginal(data.tecnico.id_rol);
+                    if (data.status === "ok" && data.data) {
+                        setDatosTecnico(data.data);
+                        setRolOriginal(data.data.id_rol);
                     } else {
                         setError(data.message || "Técnico no encontrado.");
                     }
@@ -163,7 +152,6 @@ function ModificarTecnicos() {
         <div className="sesion-form">
             {!datosTecnico && !tecnicoSeleccionado && (
                 <form onSubmit={handleBuscar}>
-
                     <InputGenerico
                         value={idTecnico}
                         setValue={setIdTecnico}
@@ -189,21 +177,24 @@ function ModificarTecnicos() {
                 <form onSubmit={handleModificar}>
                     <p><strong>ID Técnico:</strong> {datosTecnico.id_tecnico}</p>
 
-                    {/* Reuso de InputSelectRol */}
-                    <InputSelectRol
-                        roles={roles}
-                        idRol={String(datosTecnico.id_rol)}
-                        setIdRol={(value) => setDatosTecnico({ ...datosTecnico, id_rol: value })}
+                    <InputSelectGenerico
+                        idSeleccionado={String(datosTecnico.id_rol)}
+                        setIdSeleccionado={(value) => setDatosTecnico({ ...datosTecnico, id_rol: value })}
                         label="Rol"
+                        apiUrl="http://localhost/sigbi_712/api/consultar_roles.php"
+                        valueField="id_rol"
+                        displayField="rol"
+                        showDefaultOption={true}
+                        defaultOptionText="Seleccione un rol"
                     />
 
                     <InputSelectEstados
-                        estados={estados}
-                        idEstado={datosTecnico.id_estado}                  // id_estado real del técnico
+                        idEstado={datosTecnico.id_estado}
                         setIdEstado={(value) => setDatosTecnico({ ...datosTecnico, id_estado: value })}
-                        estadoActualText={datosTecnico.estado_actual}      // Texto del estado actual 
-                        idEntidad={2}                                      // 2 = Técnicos
+                        estadoActualText=""
+                        idEntidad={2}
                         label="Estado del técnico"
+                        apiUrl="http://localhost/sigbi_712/api/consultar_estados.php"
                     />
 
                     <div className="form-group">
@@ -232,12 +223,13 @@ function ModificarTecnicos() {
                                 Sí
                             </label>
                         </div>
-                        {rolCambio && (
-                            <p className="info">
-                                Los permisos se actualizarán automáticamente según el nuevo rol al guardar.
-                            </p>
-                        )}
                     </div>
+
+                    {rolCambio && (
+                        <p className="info">
+                            Los permisos se actualizarán automáticamente según el nuevo rol al guardar.
+                        </p>
+                    )}
 
                     {modificarPermisos && !rolCambio && (
                         <div className="tabla-contenedor">

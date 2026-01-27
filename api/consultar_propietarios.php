@@ -20,7 +20,7 @@ if (!isset($_SESSION['identidad'])) {
 
 // Validación de permisos que tiene el usuario para usar esta api
 $permisos = $_SESSION['permisos'] ?? [];
-$permisosRequeridos = [17]; 
+$permisosRequeridos = [17, 19]; 
 $interseccion = array_intersect($permisosRequeridos, $permisos);
 
 if (empty($interseccion)) {
@@ -35,7 +35,7 @@ try {
 
     echo json_encode($propietarios);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) {     // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error al consultar propietarios: " . $e->getMessage()

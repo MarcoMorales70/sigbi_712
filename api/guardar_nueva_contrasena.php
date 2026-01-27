@@ -1,6 +1,16 @@
 <?php
+
+// Implementacion de cabeceras
 require_once __DIR__ . "/cors.php";
-include __DIR__ . "/conexion.php"; 
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+session_start();
+include __DIR__ . "/conexion.php"; // Con PDO definido
 
 $data = json_decode(file_get_contents("php://input"), true);
 $id_tecnico = $data['id_tecnico'] ?? null;
@@ -13,7 +23,7 @@ if (!$id_tecnico || !$token || !$nueva_contrasena) {
 }
 
 try {
-    // 1. Validar técnico y token
+    // Validar técnico y token
     $sql = "SELECT codigo_temp FROM tecnicos WHERE id_tecnico = :id_tecnico";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["id_tecnico" => $id_tecnico]);
@@ -24,10 +34,10 @@ try {
         exit;
     }
 
-    // 2. Hashear nueva contraseña
+    // Hashear nueva contraseña
     $hash = password_hash($nueva_contrasena, PASSWORD_BCRYPT);
 
-    // 3. Actualizar BD y eliminar token
+    // Actualizar bd y eliminar token
     $sqlUpdate = "UPDATE tecnicos SET contrasena = :hash, codigo_temp = NULL WHERE id_tecnico = :id_tecnico";
     $stmtUpdate = $pdo->prepare($sqlUpdate);
     $stmtUpdate->execute([
@@ -35,8 +45,9 @@ try {
         "id_tecnico" => $id_tecnico
     ]);
 
+    // Respuestas json
     echo json_encode(["status" => "ok", "message" => "Contraseña restablecida correctamente."]);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) {     // Manejo de excepciones
     echo json_encode(["status" => "error", "message" => "Error en la operación: " . $e->getMessage()]);
 }

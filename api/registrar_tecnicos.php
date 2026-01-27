@@ -143,6 +143,7 @@ try {
             }
         }
 
+        // Validaciones y respuestas json
         if ($erroresPermisos) {
             echo json_encode([
                 "status" => "warning",
@@ -164,7 +165,7 @@ try {
         ]);
     }
 
-} catch (PDOException $e) {
+} catch (PDOException $e) {     // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error interno en el servidor: " . $e->getMessage()

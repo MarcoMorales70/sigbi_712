@@ -89,14 +89,14 @@ function ConsultarBienes() {
 
     const handleModificar = () => {
         if (seleccionado) {
-            setBienSeleccionado(seleccionado); // Guardar serie_bien en global
+            setBienSeleccionado(seleccionado);
             setSubModuloActual("Modificar Bienes");
         }
     };
 
     const handleEliminar = () => {
         if (seleccionado) {
-            setBienSeleccionado(seleccionado); // Guardar serie_bien en global
+            setBienSeleccionado(seleccionado);
             setSubModuloActual("Eliminar Bienes");
         }
     };

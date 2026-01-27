@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import Hardware from "./Hardware";
-import InputIdUsuario from "./InputIdUsuario";
+import InputGenerico from "./InputGenerico";
 
 function EliminarUsuarios({ idUsuarioSeleccionado }) {
     const { setSubModuloActual } = useGlobal();
@@ -13,13 +13,14 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
     const [loading, setLoading] = useState(false);
     const [mostrarHardware, setMostrarHardware] = useState(false);
 
-    // 👉 Si viene un idUsuarioSeleccionado desde ConsultarUsuarios.jsx, cargar datos directamente
+    // idUsuarioSeleccionado si viene un desde ConsultarUsuarios.jsx, cargar datos directamente
     useEffect(() => {
         if (idUsuarioSeleccionado) {
             consultarUsuario(idUsuarioSeleccionado);
         }
     }, [idUsuarioSeleccionado]);
 
+    // Efecto secundario para consultar al usuario seleccionado
     const consultarUsuario = async (id) => {
         setError("");
         setSuccess("");
@@ -44,7 +45,7 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
         }
     };
 
-    // 👉 Buscar usuario manualmente (solo si no viene de ConsultarUsuarios.jsx)
+    // Buscar usuario manualmente, directo de este componente
     const handleBuscar = async (e) => {
         e.preventDefault();
         if (!idUsuario.trim()) {
@@ -54,7 +55,7 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
         consultarUsuario(idUsuario);
     };
 
-    // 👉 Eliminar usuario
+    // Eliminar usuario
     const handleEliminar = async () => {
         setError("");
         setSuccess("");
@@ -71,11 +72,12 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
             const data = await response.json();
 
             if (data.status === "ok") {
-                setSuccess("✅ Usuario eliminado correctamente.");
+                setSuccess("\u2705 Usuario eliminado correctamente.");
             } else {
                 setError(data.message || "Error al eliminar usuario.");
             }
 
+            // Actualizar estados en cualquiera de los dos casos
             setTimeout(() => {
                 setMostrarHardware(true);
                 setSubModuloActual(null);
@@ -98,12 +100,19 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
 
     return (
         <div className="sesion-form">
-            <h2>Eliminar Usuario</h2>
-
-            {/* Modo independiente: formulario para buscar usuario */}
+            {/* Buscar usuario directamente desde este componente */}
             {!idUsuarioSeleccionado && !datosUsuario && (
                 <form onSubmit={handleBuscar}>
-                    <InputIdUsuario idUsuario={idUsuario} setIdUsuario={setIdUsuario} />
+
+                    <InputGenerico
+                        value={idUsuario}
+                        setValue={setIdUsuario}
+                        label="Número de empleado"
+                        maxLength={7}
+                        allowedChars="0-9"
+                        placeholder="7120000"
+                        title="Debe contener exactamente 7 dígitos numéricos"
+                    />
 
                     {error && <div className="error">{error}</div>}
                     {success && <div className="success">{success}</div>}
@@ -116,12 +125,11 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
                 </form>
             )}
 
-            {/* Modo integrado: mostrar resumen del usuario antes de eliminar */}
+            {/* Mostrar resumen del usuario antes de eliminar */}
             {datosUsuario && (
                 <div>
                     <p>
-                        ¿Seguro que deseas eliminar al usuario <strong>{datosUsuario.usuario}</strong>
-                        con No. Empleado: <strong>{datosUsuario.id_usuario}</strong>?
+                        ¿Seguro que deseas eliminar al usuario <strong>{datosUsuario.usuario}</strong> con No. Empleado: <strong>{datosUsuario.id_usuario}</strong>?
                     </p>
 
                     {error && <div className="error">{error}</div>}

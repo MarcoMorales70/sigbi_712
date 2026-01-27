@@ -12,7 +12,7 @@ function InputPuertos({ puertos, setPuertos, label = "Número de puertos", readO
                 className="input"
                 value={puertos}
                 onChange={handleChange}
-                disabled={readOnly} // Por ser select elemento html se usa disabled
+                disabled={readOnly} // Por ser select un elemento html se usa disabled en lugar de readOnly
             >
                 <option value="">Seleccione...</option>
                 <option value="12">12</option>

@@ -5,7 +5,7 @@ function TituloModulo() {
 
     const { moduloActual, identidad } = useGlobal();
 
-    // Si no hay móduloActual, usamos la categoría del usuario (Página Principal)
+    // Si no hay móduloActual, usamos la categoría del usuario 
     const nombre = moduloActual || identidad?.categoria || "Página Principal";
 
     return (

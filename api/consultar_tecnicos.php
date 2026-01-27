@@ -48,7 +48,7 @@ try {
         "tecnicos" => $tecnicos
     ], JSON_UNESCAPED_UNICODE);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) { // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error en la consulta: " . $e->getMessage()

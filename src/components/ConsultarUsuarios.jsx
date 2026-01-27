@@ -1,12 +1,8 @@
 import React, { useState } from "react";
-import InputIdUsuario from "./InputIdUsuario";
-import InputSelectCargos from "./InputSelectCargos";
-import InputSelectDirecciones from "./InputSelectDirecciones";
-import InputSelectSedes from "./InputSelectSedes";
-import InputSelectEdificios from "./InputSelectEdificios";
-import InputSelectNiveles from "./InputSelectNiveles";
-import ModificarUsuarios from "./ModificarUsuarios";   // 👈 importar el componente
-import EliminarUsuarios from "./EliminarUsuarios";     // 👈 importar el componente
+import ModificarUsuarios from "./ModificarUsuarios";
+import EliminarUsuarios from "./EliminarUsuarios";
+import InputGenerico from "./InputGenerico";
+import InputSelectGenerico from "./InputSelectGenerico";
 import "../styles/Formularios.css";
 
 function ConsultarUsuarios() {
@@ -24,6 +20,7 @@ function ConsultarUsuarios() {
     const [modoEliminar, setModoEliminar] = useState(false);
 
     const handleConsultar = async () => {
+        // Se crea un objeto payload para mandarlo en el fetch
         const payload = {
             consulta_elegida: consultaElegida,
             id_usuario: idUsuario,
@@ -62,7 +59,7 @@ function ConsultarUsuarios() {
 
         try {
             if (seleccionado === null) {
-                // 👉 Exportar todos los usuarios
+                // Exportar todos los usuarios
                 headers = [
                     "ID Usuario", "Usuario", "Apellido Paterno", "Apellido Materno",
                     "Correo", "Cargo", "Dirección", "Sede", "Edificio", "Nivel"
@@ -80,13 +77,14 @@ function ConsultarUsuarios() {
                     u.nivel
                 ]);
             } else {
-                // 👉 Exportar solo el usuario seleccionado con datos enriquecidos
+                // Exportar solo el usuario seleccionado con datos enriquecidos
                 const response = await fetch(`http://localhost/sigbi_712/api/consulta_27.php`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",
                     body: JSON.stringify({ consulta_elegida: 1, id_usuario: seleccionado })
                 });
+
                 const data = await response.json();
 
                 if (data.status === "ok" && data.resultados.length > 0) {
@@ -113,13 +111,14 @@ function ConsultarUsuarios() {
                 }
             }
 
-            // 👉 Generar CSV
-            let csvContent = "\uFEFF";
+            // Generar CSV, 
+            let csvContent = "\uFEFF";  // Caracter invisible, para evitar errores al arbrir el archivo y se utilice la codificación correcta
             csvContent += headers.join(",") + "\r\n";
             rows.forEach(r => {
                 csvContent += r.join(",") + "\r\n";
             });
 
+            // Mecánica para crear un objeto Blob, que contiene los datos en un archivo csv y se pueda exportar
             const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -134,21 +133,20 @@ function ConsultarUsuarios() {
         }
     };
 
-    // 👉 Si estamos en modo modificar, renderizamos ModificarUsuarios directamente
+    // Si estamos en modo modificar, renderizamos ModificarUsuarios directamente
     if (modoModificar && seleccionado) {
         return <ModificarUsuarios idUsuarioSeleccionado={seleccionado} />;
     }
 
-    // 👉 Si estamos en modo eliminar, renderizamos EliminarUsuarios directamente
+    // Si estamos en modo eliminar, renderizamos EliminarUsuarios directamente
     if (modoEliminar && seleccionado) {
         return <EliminarUsuarios idUsuarioSeleccionado={seleccionado} />;
     }
 
     return (
         <div className="sesion-form">
-            <h2>Consultar Usuarios</h2>
 
-            {/* Bloque de radios */}
+            {/* Bloque de radio botones*/}
             <div className="form-group">
                 <label><input type="radio" name="consulta" value="1" onChange={() => setConsultaElegida(1)} /> No. Empleado</label>
                 <label><input type="radio" name="consulta" value="2" onChange={() => setConsultaElegida(2)} /> Cargo</label>
@@ -157,15 +155,84 @@ function ConsultarUsuarios() {
                 <label><input type="radio" name="consulta" value="5" onChange={() => setConsultaElegida(5)} /> Todos los usuarios</label>
             </div>
 
-            {/* Inputs condicionales */}
-            {consultaElegida === 1 && <InputIdUsuario idUsuario={idUsuario} setIdUsuario={setIdUsuario} />}
-            {consultaElegida === 2 && <InputSelectCargos idCargo={idCargo} setIdCargo={setIdCargo} />}
-            {consultaElegida === 3 && <InputSelectDirecciones idDireccion={idDireccion} setIdDireccion={setIdDireccion} />}
+            {/* Inputs condicionales de acuerdo a cada selección de radio botones*/}
+            {consultaElegida === 1 &&
+                <InputGenerico
+                    value={idUsuario}
+                    setValue={setIdUsuario}
+                    label="Número de empleado"
+                    maxLength={7}
+                    allowedChars="0-9"
+                    placeholder="7120000"
+                    title="Debe contener exactamente 7 dígitos numéricos"
+                />
+            }
+
+            {consultaElegida === 2 &&
+                <InputSelectGenerico
+                    idSeleccionado={idCargo}
+                    setIdSeleccionado={setIdCargo}
+                    label="Cargo"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_cargos.php"
+                    valueField="id_cargo"
+                    displayField="cargo"
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione un cargo"
+                />
+            }
+
+            {consultaElegida === 3 &&
+                <InputSelectGenerico
+                    idSeleccionado={idDireccion}
+                    setIdSeleccionado={setIdDireccion}
+                    label="Dirección Administrativa"
+                    apiUrl="http://localhost/sigbi_712/api/consultar_direcciones.php"
+                    valueField="id_direccion"
+                    displayField="direccion_a"
+                    readOnly={false}
+                    showDefaultOption={true}
+                    defaultOptionText="Seleccione Dirección Administrativa"
+                />
+            }
+
             {consultaElegida === 4 && (
                 <>
-                    <InputSelectSedes idSede={idSede} setIdSede={setIdSede} />
-                    <InputSelectEdificios idEdificio={idEdificio} setIdEdificio={setIdEdificio} />
-                    <InputSelectNiveles idNivel={idNivel} setIdNivel={setIdNivel} />
+                    <InputSelectGenerico
+                        idSeleccionado={idSede}
+                        setIdSeleccionado={setIdSede}
+                        label="Sede"
+                        apiUrl="http://localhost/sigbi_712/api/consultar_sedes.php"
+                        valueField="id_sede"
+                        displayField="acronimo"
+                        readOnly={false}
+                        showDefaultOption={true}
+                        defaultOptionText="Seleccione una sede"
+                    />
+
+                    <InputSelectGenerico
+                        idSeleccionado={idEdificio}
+                        setIdSeleccionado={setIdEdificio}
+                        label="Edificio"
+                        apiUrl="http://localhost/sigbi_712/api/consultar_edificios.php"
+                        valueField="id_edificio"
+                        displayField="edificio"
+                        readOnly={false}
+                        showDefaultOption={true}
+                        defaultOptionText="Seleccione un edificio"
+                    />
+
+                    <InputSelectGenerico
+                        idSeleccionado={idNivel}
+                        setIdSeleccionado={setIdNivel}
+                        label="Nivel"
+                        apiUrl="http://localhost/sigbi_712/api/consultar_niveles.php"
+                        valueField="id_nivel"
+                        displayField="nivel"
+                        readOnly={false}
+                        showDefaultOption={true}
+                        defaultOptionText="Seleccione un piso o nivel"
+                    />
                 </>
             )}
 

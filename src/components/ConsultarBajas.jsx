@@ -3,7 +3,7 @@ import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import Hardware from "./Hardware";
 import EliminarBajas from "./EliminarBajas";
-import ModificarBajas from "./ModificarBajas"; // 🔹 importar el componente
+import ModificarBajas from "./ModificarBajas";
 
 function ConsultarBajas() {
     const { permisos } = useGlobal();
@@ -12,7 +12,7 @@ function ConsultarBajas() {
     const [seleccionado, setSeleccionado] = useState(null);
     const [mostrarHardware, setMostrarHardware] = useState(false);
     const [modoEliminar, setModoEliminar] = useState(false);
-    const [modoModificar, setModoModificar] = useState(false); // 🔹 nuevo estado
+    const [modoModificar, setModoModificar] = useState(false);
 
     const tienePermisoConsultar = permisos.includes(22); // id_permiso=22 "Consultar Bajas"
 

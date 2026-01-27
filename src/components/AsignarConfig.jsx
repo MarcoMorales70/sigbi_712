@@ -6,6 +6,9 @@ function AsignarConfig() {
 
     return (
         <div>
+            <p style={{ color: "red", fontSize: "24px", fontWeight: "bold" }}>
+                En construcción...
+            </p>
             <p>Texto de prueba desde dentro del componente AsignarConfig.jsx</p>
         </div>
     );

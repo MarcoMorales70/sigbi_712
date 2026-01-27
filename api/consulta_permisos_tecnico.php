@@ -45,7 +45,7 @@ try {
     foreach ($stmtPermisos->fetchAll(PDO::FETCH_ASSOC) as $row) {
         $permisosDisponibles[] = [
             "id_permiso" => (int)$row["id_permiso"],
-            "nombre"     => $row["permiso"] // alias para frontend
+            "nombre"     => $row["permiso"] // Alias para para manejarlo en el frontend
         ];
     }
 
@@ -65,7 +65,7 @@ try {
         "permisosSeleccionados" => $permisosSeleccionados
     ], JSON_UNESCAPED_UNICODE);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) {     // Manejo de excepciones
     echo json_encode([
         "status" => "error",
         "message" => "Error en la consulta: " . $e->getMessage()

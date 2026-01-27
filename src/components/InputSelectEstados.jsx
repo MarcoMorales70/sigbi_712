@@ -1,18 +1,54 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
-function InputSelectEstados({ estados, idEstado, setIdEstado, estadoActualText, idEntidad, label = "Estado", readOnly = false }) {
-    // Filtrar estados según la entidad indicada (normalizando a número) en caso de ingresar cadena, así funciona de las dos formas
+function InputSelectEstados({
+    idEstado,
+    setIdEstado,
+    estadoActualText,
+    idEntidad,
+    label = "Estado",
+    readOnly = false,
+    apiUrl = "http://localhost/sigbi_712/api/consultar_estados.php"
+}) {
+    const [estados, setEstados] = useState([]);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    // Consultar estados desde la API
+    useEffect(() => {
+        setLoading(true);
+        fetch(apiUrl, { credentials: "include" })
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setEstados(data);
+                    setError("");
+                } else if (data.estados && Array.isArray(data.estados)) {
+                    setEstados(data.estados);
+                    setError("");
+                } else {
+                    setError(data.message || "\u26A0 No se pudieron cargar los estados.");
+                }
+            })
+            .catch(() => setError("\u26A0 Error de conexión al cargar estados."))
+            .finally(() => setLoading(false));
+    }, [apiUrl]);
+
+    // Filtrar estados por entidad
     const estadosFiltrados = useMemo(() => {
         return estados.filter(e => Number(e.id_entidad) === Number(idEntidad));
     }, [estados, idEntidad]);
 
-    // Si el estado actual no está en la lista, se agregamos
+    // Agregar estado actual si no está en la lista
     const opciones = useMemo(() => {
         const lista = [...estadosFiltrados];
         if (idEstado) {
             const existe = lista.some(e => Number(e.id_estado) === Number(idEstado));
             if (!existe && estadoActualText) {
-                lista.unshift({ id_estado: idEstado, estado: estadoActualText, id_entidad: idEntidad });
+                lista.unshift({
+                    id_estado: idEstado,
+                    estado: estadoActualText,
+                    id_entidad: idEntidad
+                });
             }
         }
         return lista;
@@ -25,7 +61,7 @@ function InputSelectEstados({ estados, idEstado, setIdEstado, estadoActualText, 
                 className="input"
                 value={idEstado || ""}
                 onChange={(e) => setIdEstado(Number(e.target.value))}
-                disabled={readOnly}
+                disabled={readOnly || loading}
             >
                 <option value="">Seleccione un estado</option>
                 {opciones.map((estado) => (
@@ -34,6 +70,9 @@ function InputSelectEstados({ estados, idEstado, setIdEstado, estadoActualText, 
                     </option>
                 ))}
             </select>
+
+            {loading && <div className="loading">Cargando estados...</div>}
+            {error && <div className="error">{error}</div>}
         </div>
     );
 }

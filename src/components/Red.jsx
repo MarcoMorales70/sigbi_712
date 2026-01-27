@@ -6,6 +6,9 @@ function Red() {
 
     return (
         <div>
+            <p style={{ color: "red", fontSize: "24px", fontWeight: "bold" }}>
+                En construcción...
+            </p>
             <p>Texto de prueba del componente Red.jsx</p>
         </div>
     );

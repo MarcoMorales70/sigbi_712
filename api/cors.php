@@ -1,9 +1,8 @@
 <?php
-// =========================
-// Configuración CORS y JSON
-// =========================
 
-// Permitir origen específico (React en localhost:3000)
+// Manejador de cabeceras para que el acceso a la api
+
+// Permitir origen específico para React en localhost:3000 donde se esta desarrollando el proyecto
 header("Access-Control-Allow-Origin: http://localhost:3000");
 
 // Permitir cabeceras necesarias
@@ -12,7 +11,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 // Métodos permitidos
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
-// Si usas sesiones/cookies, habilita credenciales
+// Para el uso de sesiones o cookies, habilitar las credenciales
 header("Access-Control-Allow-Credentials: true");
 
 // Responder preflight OPTIONS

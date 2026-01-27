@@ -1,8 +1,19 @@
 <?php
-require_once __DIR__ . "/cors.php";
-include __DIR__ . "/conexion.php";  
 
-// Importar PHPMailer desde la carpeta src (que está un nivel arriba de api)
+// Implementacion de cabeceras
+require_once __DIR__ . "/cors.php";
+
+// Manejo de pre-flight cors
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+session_start();
+include __DIR__ . "/conexion.php"; // Con PDO definido
+
+
+// Importar PHPMailer desde la carpeta src está un nivel arriba de esta api
 require __DIR__ . '/../src/PHPMailer.php';
 require __DIR__ . '/../src/SMTP.php';
 require __DIR__ . '/../src/Exception.php';
@@ -20,7 +31,7 @@ if (!$id_tecnico || !$codigo_temp) {
 }
 
 try {
-    // 1. Validar técnico y código
+    // Validar técnico y código
     $sql = "SELECT codigo_temp FROM tecnicos WHERE id_tecnico = :id_tecnico";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["id_tecnico" => $id_tecnico]);
@@ -36,7 +47,7 @@ try {
         exit;
     }
 
-    // 2. Obtener correo del usuario
+    // Obtener correo del usuario
     $sqlCorreo = "SELECT correo FROM usuarios WHERE id_usuario = :id_tecnico";
     $stmtCorreo = $pdo->prepare($sqlCorreo);
     $stmtCorreo->execute(["id_tecnico" => $id_tecnico]);
@@ -49,10 +60,10 @@ try {
 
     $destinatario = $usuario['correo'];
 
-    // 3. Preparar enlace de restablecimiento
+    // Preparar enlace de restablecimiento
     $enlace = "https://tusistema.com/reset_password.php?id_tecnico=$id_tecnico&token=$codigo_temp";
 
-    // 4. Enviar correo
+    // Enviar correo
     $mail = new PHPMailer(true);
 
     try {

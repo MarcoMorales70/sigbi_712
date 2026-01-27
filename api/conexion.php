@@ -1,4 +1,6 @@
 <?php
+
+// Cabecera de formato y codificación
 header("Content-Type: application/json; charset=UTF-8");
 
 $host = "localhost";

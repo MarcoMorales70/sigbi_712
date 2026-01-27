@@ -12,16 +12,17 @@ function CambiarContrasena() {
     const [passwordNueva, setPasswordNueva] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [error, setError] = useState("");
-    const [step, setStep] = useState(1); // Pasos : 1 = ingresar credenciales, 2 = nueva contraseña
+    const [step, setStep] = useState(1);
     const [success, setSuccess] = useState(false);
 
+    // Validaciones
     const validarPassword = (pwd) => {
         const regex =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_\-])[A-Za-z\d@$!%*?&_\-]{8,}$/;
         return regex.test(pwd);
     };
 
-    // Paso 1: validar credenciales
+    // Validar credenciales
     const handleValidarCredenciales = async (e) => {
         e.preventDefault();
         setError("");
@@ -53,7 +54,7 @@ function CambiarContrasena() {
         }
     };
 
-    // Paso 2: cambiar contraseña
+    // Cambiar contraseña
     const handleCambiarContrasena = async (e) => {
         e.preventDefault();
         setError("");

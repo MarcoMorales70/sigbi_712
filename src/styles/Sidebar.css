@@ -67,7 +67,7 @@
     color: white;
 }
 
-/* ✅ Footer con botón de cerrar sesión */
+/* Footer con botón de cerrar sesión */
 .sidebar-footer {
     margin-top: 20px;
     /* se adapta al contenido, no fuerza scroll */
@@ -82,7 +82,7 @@
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 
 .logout-btn:hover {

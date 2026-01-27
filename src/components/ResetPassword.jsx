@@ -9,7 +9,7 @@ function ResetPassword() {
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    // Extraer parámetros de la URL (id_tecnico y token)
+    // Extraer parámetros de la URL, id_tecnico y token
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         setIdTecnico(params.get("id_tecnico") || "");

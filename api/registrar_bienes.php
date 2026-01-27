@@ -69,7 +69,7 @@ if (!$version_soft || strlen($version_soft) > 50) {
     exit;
 }
 
-// Validar inventario solo si el propietario es SICT (id_propietario = 1)
+// Validar inventario solo si el propietario es SICT id_propietario = 1
 if ($id_propietario == 1) {
     if (!$inventario || strlen($inventario) !== 35) {
         echo json_encode(["status" => "error", "message" => "El inventario debe contener exactamente 35 caracteres."]);
@@ -175,7 +175,7 @@ try {
     // Respuestas json
     echo json_encode(["status" => "ok", "message" => "Bien registrado correctamente."]);
 
-} catch (PDOException $e) {
+} catch (PDOException $e) {  // Manejo de excepciones
     $pdo->rollBack();
     echo json_encode(["status" => "error", "message" => "Error en la operación: " . $e->getMessage()]);
 }

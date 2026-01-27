@@ -15,6 +15,7 @@ function InputGenerico({
 }) {
     const [error, setError] = useState(false);
 
+    // Manejador de cambios
     const handleChange = (e) => {
         let inputValue = e.target.value;
 

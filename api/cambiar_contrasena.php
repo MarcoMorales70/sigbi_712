@@ -49,6 +49,6 @@ try {
     } else {
         echo json_encode(["status" => "error", "message" => "No se actualizó la contraseña (verifica el ID)."]);
     }
-} catch (PDOException $e) {    // Manejo de errores
+} catch (PDOException $e) {    // Manejo de excepciones
     echo json_encode(["status" => "error", "message" => "Error al actualizar la contraseña: " . $e->getMessage()]);
 }

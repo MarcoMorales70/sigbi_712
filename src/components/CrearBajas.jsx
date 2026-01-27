@@ -7,25 +7,21 @@ function CrearBajas() {
     const [baja, setBaja] = useState("");
     const [totalDictamenes, setTotalDictamenes] = useState("");
     const [totalBienesGlobal, setTotalBienesGlobal] = useState("");
-
     const [dictamenes, setDictamenes] = useState([]);
     const [registroOk, setRegistroOk] = useState(false); // Auxiliar para paso 2
     const [paso3Activo, setPaso3Activo] = useState(false); // Auxiliar para paso 3
-
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
-
     const isPositiveIntString = (s) => /^\d+$/.test(s) && parseInt(s, 10) > 0;
-
     const [dictamenesPaso3, setDictamenesPaso3] = useState([]);
     const [bienesDisponibles, setBienesDisponibles] = useState([]);
     const [dictamenActual, setDictamenActual] = useState(0);
     const [seleccionados, setSeleccionados] = useState([]);
-
     const [mostrarHardware, setMostrarHardware] = useState(false);
     const [bienesEdo3, setBienesEdo3] = useState(0); // Variable de referencia para limitar el ingreso de valores
 
+    // Efecto secundario para obtener los bienes susceptibles de baja
     useEffect(() => {
         const fetchBienesEdo3 = async () => {
             try {
@@ -240,7 +236,7 @@ function CrearBajas() {
                 } else {
                     setSuccess("\u2705 Se crea la baja con éxito");
                     setTimeout(() => {
-                        setMostrarHardware(true); // Activa Hardware
+                        setMostrarHardware(true);
                     }, 3000);
                 }
             } else {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../styles/Formularios.css";
-import InputGenerico from "./InputGenerico"; // Componente reutilizable
+import InputGenerico from "./InputGenerico";
 import Hardware from "./Hardware";
 
 function ReactivarBienes() {

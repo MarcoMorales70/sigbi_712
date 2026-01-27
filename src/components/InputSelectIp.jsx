@@ -20,7 +20,7 @@ function InputSelectIp({ idIp, setIdIp, ipActualText, label = "IP disponible" })
         if (idIp !== null && idIp !== undefined) {
             const existe = lista.some(item => item.id_ip === idIp);
             if (!existe && ipActualText) {
-                lista.unshift({ id_ip: idIp, ip: ipActualText }); // insertar al inicio
+                lista.unshift({ id_ip: idIp, ip: ipActualText }); // Insertar al inicio, que aparezca como primera opción
             }
         }
         return lista;

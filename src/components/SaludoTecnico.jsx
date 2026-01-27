@@ -5,10 +5,10 @@ function SaludoTecnico() {
 
     const { identidad } = useGlobal();
 
-    // Si no hay identidad, no mostramos nada
+    // Si no hay identidad, no se muestra nada
     if (!identidad) return null;
 
-    // Usamos el nombre completo que ya devuelve login.php
+    // Se usa el nombre completo que ya devuelve login.php
     const nombreCompleto = identidad.nombre || "Técnico";
 
     return (

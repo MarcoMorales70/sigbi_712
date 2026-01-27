@@ -5,7 +5,6 @@ import InputGenerico from "./InputGenerico";
 import InputContrasena from "./InputContrasena";
 
 function CompletarRegistro() {
-    const { setModuloActual, setSubModuloActual } = useGlobal();
 
     const [idTecnico, setIdTecnico] = useState("");
     const [codigoTemp, setCodigoTemp] = useState("");
@@ -14,6 +13,7 @@ function CompletarRegistro() {
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
+    // Validaciones
     const validarInputs = () => {
         if (!/^\d{7}$/.test(idTecnico)) {
             return "El ID técnico debe contener exactamente 7 dígitos.";

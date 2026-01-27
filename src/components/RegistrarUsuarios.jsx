@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import Hardware from "./Hardware";
 import InputGenerico from "./InputGenerico";
 import InputSelectGenerico from "./InputSelectGenerico";
 
 function RegistrarUsuarios() {
+    const { setSubModuloActual } = useGlobal();
     const [idUsuario, setIdUsuario] = useState("");
     const [usuario, setUsuario] = useState("");
     const [aPaterno, setApaterno] = useState("");
@@ -77,14 +79,21 @@ function RegistrarUsuarios() {
                 })
             });
 
+            // Se recibe y procesa la respuesta
             const data = await response.json();
             if (data.status === "ok") {
                 resetForm();
                 setSuccess(data.message);
-                setTimeout(() => setMostrarHardware(true), 3000);
+                setTimeout(() => {
+                    setSubModuloActual(null);
+                    setMostrarHardware(true);
+                }, 3000);
             } else {
                 setError(data.message || "Error al registrar usuario.");
-                setTimeout(() => setMostrarHardware(true), 3000);
+                setTimeout(() => {
+                    setSubModuloActual(null);
+                    setMostrarHardware(true);
+                }, 3000);
             }
         } catch (err) {
             setError("Error de conexión con el servidor.");
@@ -100,7 +109,6 @@ function RegistrarUsuarios() {
     return (
         <div className="sesion-form">
             <form onSubmit={handleRegistrar}>
-
 
                 <InputGenerico
                     value={idUsuario}
@@ -175,10 +183,10 @@ function RegistrarUsuarios() {
                     label="Dirección Administrativa"
                     apiUrl="http://localhost/sigbi_712/api/consultar_direcciones.php"
                     valueField="id_direccion"
-                    displayField="direccion_admin"
+                    displayField="direccion_a"
                     readOnly={false}
                     showDefaultOption={true}
-                    defaultOptionText="Seleccione Dirección/Departamento/Área"
+                    defaultOptionText="Seleccione Dirección Administrativa"
                 />
 
                 <InputSelectGenerico
@@ -187,7 +195,7 @@ function RegistrarUsuarios() {
                     label="Sede"
                     apiUrl="http://localhost/sigbi_712/api/consultar_sedes.php"
                     valueField="id_sede"
-                    displayField="sede"
+                    displayField="acronimo"
                     readOnly={false}
                     showDefaultOption={true}
                     defaultOptionText="Seleccione una sede"

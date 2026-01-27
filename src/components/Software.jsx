@@ -6,6 +6,9 @@ function Software() {
 
     return (
         <div>
+            <p style={{ color: "red", fontSize: "24px", fontWeight: "bold" }}>
+                En construcción...
+            </p>
             <p>Texto de prueba del componente Software.jsx</p>
         </div>
     );

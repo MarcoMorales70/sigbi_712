@@ -10,7 +10,7 @@ function RecuperarContrasena() {
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    // fuerza mayúsculas al escribir el código temporal
+    // Para forzar el ingreso de solo mayúsculas
     const handleCodigoChange = (e) => {
         const value = e.target.value.toUpperCase();
         setCodigoTemp(value);
@@ -43,7 +43,7 @@ function RecuperarContrasena() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     id_tecnico: idTecnico,
-                    codigo_temp: codigoTemp.toUpperCase(), // aseguramos mayúsculas al enviar
+                    codigo_temp: codigoTemp.toUpperCase(), // Asegura mayúsculas al enviar
                 }),
             });
 

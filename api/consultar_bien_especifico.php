@@ -56,7 +56,7 @@ try {
                 u.usuario,
                 i.ip,
                 i.id_ip,
-                e.estado AS estado_actual 
+                e.estado AS estado_actual
             FROM bienes b
             LEFT JOIN usuarios u ON b.id_uso = u.id_usuario
             LEFT JOIN ips i ON b.id_ip = i.id_ip
@@ -73,27 +73,10 @@ try {
         exit;
     }
 
-    // Listas para los selects
-    $stmt = $pdo->query("SELECT id_tipo, tipo_bien FROM tipo_bienes ORDER BY tipo_bien ASC");
-    $tipos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $stmt = $pdo->query("SELECT id_estado, estado, id_entidad FROM estados ORDER BY estado ASC");
-    $estados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $stmt = $pdo->query("SELECT id_propietario, propietario FROM propietarios ORDER BY propietario ASC");
-    $propietarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $stmt = $pdo->query("SELECT id_usuario, a_paterno, a_materno, usuario FROM usuarios ORDER BY a_paterno ASC");
-    $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Respuesta json
+    // Respuesta json solo con el bien
     echo json_encode([
         "status" => "ok",
-        "bien" => $bien,
-        "tipos" => $tipos,
-        "estados" => $estados,
-        "propietarios" => $propietarios,
-        "usuarios" => $usuarios
+        "bien" => $bien
     ]);
 
 } catch (PDOException $e) {     // Manejo de excepciones
