@@ -20,7 +20,7 @@ function InputSelectEstados({
     // Consultar estados desde la API
     useEffect(() => {
         setLoading(true);
-        fetch(apiUrl, { credentials: "include" })
+        fetch(url, { credentials: "include" })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
