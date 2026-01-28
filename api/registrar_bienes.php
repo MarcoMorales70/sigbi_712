@@ -92,7 +92,7 @@ if ($id_uso && !preg_match('/^[0-9]{7}$/', $id_uso)) {
     exit;
 }
 
-// Validación de la id disponible
+// Validación de la ip disponible
 $ipCompleta = null;
 if ($id_ip) {
     $stmt = $pdo->prepare("SELECT ip FROM ips WHERE id_ip = :id LIMIT 1");
@@ -151,19 +151,19 @@ try {
 
     $stmt->execute([
         "serie_bien"    => $serie_bien,
-        "id_ip"         => $id_ip ?: null,
+        "id_ip"         => in_array($id_estado, [3,5]) ? null : ($id_ip ?: null),
         "id_tipo"       => $id_tipo,
         "marca"         => $marca,
         "modelo"        => $modelo,
         "version_soft"  => $version_soft,
-        "inventario"    => $inventario ?: null,
+        "inventario"    => ($id_propietario == 1) ? ($inventario ?: null) : null,
         "id_estado"     => $id_estado ?: null,
         "id_propietario"=> $id_propietario ?: null,
         "id_resg"       => $id_resg ?: null,
         "id_uso"        => $id_uso ?: null
     ]);
 
-    if ($id_ip && $ipCompleta) {
+    if ($id_ip && $ipCompleta && !in_array($id_estado, [3, 5])) {
         $stmt = $pdo->prepare("UPDATE ips SET ip = :ip WHERE id_ip = :id");
         $stmt->execute([
             "ip" => $ipCompleta,
