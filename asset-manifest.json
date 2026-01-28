@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/sigbi_712/static/css/main.46f285f5.css",
-    "main.js": "/sigbi_712/static/js/main.3fcae3c8.js",
-    "static/js/453.c7b28319.chunk.js": "/sigbi_712/static/js/453.c7b28319.chunk.js",
-    "static/media/logo_sict.png": "/sigbi_712/static/media/logo_sict.ec8ddedaed50eef1e9f3.png",
-    "index.html": "/sigbi_712/index.html",
-    "main.46f285f5.css.map": "/sigbi_712/static/css/main.46f285f5.css.map",
-    "main.3fcae3c8.js.map": "/sigbi_712/static/js/main.3fcae3c8.js.map",
-    "453.c7b28319.chunk.js.map": "/sigbi_712/static/js/453.c7b28319.chunk.js.map"
+    "main.css": "./static/css/main.46f285f5.css",
+    "main.js": "./static/js/main.e3c17f0f.js",
+    "static/js/453.c7b28319.chunk.js": "./static/js/453.c7b28319.chunk.js",
+    "static/media/logo_sict.png": "./static/media/logo_sict.ec8ddedaed50eef1e9f3.png",
+    "index.html": "./index.html",
+    "main.46f285f5.css.map": "./static/css/main.46f285f5.css.map",
+    "main.e3c17f0f.js.map": "./static/js/main.e3c17f0f.js.map",
+    "453.c7b28319.chunk.js.map": "./static/js/453.c7b28319.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.46f285f5.css",
-    "static/js/main.3fcae3c8.js"
+    "static/js/main.e3c17f0f.js"
   ]
 }
