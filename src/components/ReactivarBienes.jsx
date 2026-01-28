@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import InputGenerico from "./InputGenerico";
 import Hardware from "./Hardware";
@@ -25,7 +26,7 @@ function ReactivarBienes() {
         }
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/reactivar_bienes.php", {
+            const response = await fetch(`${API_URL}/reactivar_bienes.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 
 function ResetPassword() {
@@ -38,7 +39,7 @@ function ResetPassword() {
         }
 
         try {
-            const response = await fetch("http://localhost?sigbi_712/api/guardar_nueva_contrasena.php", {
+            const response = await fetch(`${API_URL}/guardar_nueva_contrasena.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

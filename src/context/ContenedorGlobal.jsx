@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";  // Se importan las funciones de la librería de react.
+import API_URL from "../config";
 
 const ContenedorGlobal = createContext(); // Se crea un contexto global para compartir estados entre componentes.
 const permisosArranque = [1, 2, 3, 4]; // Permisos en modo invitado / de arranque, básicos.
@@ -15,7 +16,7 @@ export function ContenedorGlobalProvider({ children }) { // Permite la exportaci
     // Función para cerrar sesión en backend y limpiar el estado en frontend
     const logout = async () => { // Se declara la función cerrar sesión como asíncrona
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/logout.php", {
+            const response = await fetch(`${API_URL}/logout.php`, {
                 method: "POST",
                 credentials: "include" // Se incluyen las cookies
             });

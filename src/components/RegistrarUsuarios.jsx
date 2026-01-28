@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../config";
 import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import Hardware from "./Hardware";
@@ -61,7 +62,7 @@ function RegistrarUsuarios() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/registrar_usuarios.php", {
+            const response = await fetch(`${API_URL}/registrar_usuarios.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -169,7 +170,7 @@ function RegistrarUsuarios() {
                     idSeleccionado={idCargo}
                     setIdSeleccionado={setIdCargo}
                     label="Cargo"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_cargos.php"
+                    apiUrl={`${API_URL}/consultar_cargos.php`}
                     valueField="id_cargo"
                     displayField="cargo"
                     readOnly={false}
@@ -181,7 +182,7 @@ function RegistrarUsuarios() {
                     idSeleccionado={idDireccion}
                     setIdSeleccionado={setIdDireccion}
                     label="Dirección Administrativa"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_direcciones.php"
+                    apiUrl={`${API_URL}/consultar_direcciones.php`}
                     valueField="id_direccion"
                     displayField="direccion_a"
                     readOnly={false}
@@ -193,7 +194,7 @@ function RegistrarUsuarios() {
                     idSeleccionado={idSede}
                     setIdSeleccionado={setIdSede}
                     label="Sede"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_sedes.php"
+                    apiUrl={`${API_URL}/consultar_sedes.php`}
                     valueField="id_sede"
                     displayField="acronimo"
                     readOnly={false}
@@ -205,7 +206,7 @@ function RegistrarUsuarios() {
                     idSeleccionado={idEdificio}
                     setIdSeleccionado={setIdEdificio}
                     label="Edificio"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_edificios.php"
+                    apiUrl={`${API_URL}/consultar_edificios.php`}
                     valueField="id_edificio"
                     displayField="edificio"
                     readOnly={false}
@@ -217,7 +218,7 @@ function RegistrarUsuarios() {
                     idSeleccionado={idNivel}
                     setIdSeleccionado={setIdNivel}
                     label="Nivel"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_niveles.php"
+                    apiUrl={`${API_URL}/consultar_niveles.php`}
                     valueField="id_nivel"
                     displayField="nivel"
                     readOnly={false}

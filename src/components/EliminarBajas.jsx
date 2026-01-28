@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import Hardware from "./Hardware";
 
@@ -18,7 +19,7 @@ function EliminarBajas({ idBajaInicial, bajaInicial, totalDictamenesInicial, tot
         if (!idBajaInicial) {
             const fetchBajas = async () => {
                 try {
-                    const response = await fetch("http://localhost/sigbi_712/api/consultar_bajas.php", {
+                    const response = await fetch(`${API_URL}/consultar_bajas.php`, {
                         method: "GET",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include"
@@ -54,7 +55,7 @@ function EliminarBajas({ idBajaInicial, bajaInicial, totalDictamenesInicial, tot
 
     const handleEliminar = async () => {
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/eliminar_bajas.php", {
+            const response = await fetch(`${API_URL}/eliminar_bajas.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

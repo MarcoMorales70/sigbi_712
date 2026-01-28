@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
@@ -42,7 +43,7 @@ function CompletarRegistro() {
         }
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/completar_registro.php", {
+            const response = await fetch(`${API_URL} /completar_registro.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

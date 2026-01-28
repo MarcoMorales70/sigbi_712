@@ -39,6 +39,7 @@ function Layout({ children }) {
                 <div className='header3'>
                     <div><NomArea /></div>
                     <div><Actividad modulo={moduloActual} /></div>
+                    <div><NomDirAdm /></div>
                 </div>
                 <div><SaludoTecnico /></div>
             </header>

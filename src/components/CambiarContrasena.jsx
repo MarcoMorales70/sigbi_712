@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
@@ -32,7 +33,7 @@ function CambiarContrasena() {
         }
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/validar_login.php", {
+            const response = await fetch(`${API_URL}/validar_login.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -69,7 +70,7 @@ function CambiarContrasena() {
         }
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/cambiar_contrasena.php", {
+            const response = await fetch(`${API_URL}/cambiar_contrasena.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
@@ -28,7 +29,7 @@ function ModificarTecnicos() {
 
         try {
             const response = await fetch(
-                "http://localhost/sigbi_712/api/consultar_tecnico_especifico.php?id_tecnico=" + idTecnico,
+                `${API_URL}/consultar_tecnico_especifico.php?id_tecnico=` + idTecnico,
                 { credentials: "include" }
             );
 
@@ -54,7 +55,7 @@ function ModificarTecnicos() {
     // Cargar técnico automáticamente si viene desde ConsultarTecnicos.jsx
     useEffect(() => {
         if (tecnicoSeleccionado) {
-            fetch("http://localhost/sigbi_712/api/consultar_tecnico_especifico.php?id_tecnico=" + tecnicoSeleccionado, {
+            fetch(`${API_URL}/consultar_tecnico_especifico.php?id_tecnico=` + tecnicoSeleccionado, {
                 credentials: "include"
             })
                 .then(res => res.json())
@@ -73,7 +74,7 @@ function ModificarTecnicos() {
     // Cargar permisos si se activa el radiobutton
     useEffect(() => {
         if (modificarPermisos && datosTecnico) {
-            fetch("http://localhost/sigbi_712/api/consulta_permisos_tecnico.php", {
+            fetch(`${API_URL}/consulta_permisos_tecnico.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -109,7 +110,7 @@ function ModificarTecnicos() {
                 payload.permisos = permisosSeleccionados;
             }
 
-            const response = await fetch("http://localhost/sigbi_712/api/modificar_tecnicos.php", {
+            const response = await fetch(`${API_URL}/modificar_tecnicos.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -181,7 +182,7 @@ function ModificarTecnicos() {
                         idSeleccionado={String(datosTecnico.id_rol)}
                         setIdSeleccionado={(value) => setDatosTecnico({ ...datosTecnico, id_rol: value })}
                         label="Rol"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_roles.php"
+                        apiUrl={`${API_URL}/consultar_roles.php`}
                         valueField="id_rol"
                         displayField="rol"
                         showDefaultOption={true}
@@ -194,7 +195,7 @@ function ModificarTecnicos() {
                         estadoActualText=""
                         idEntidad={2}
                         label="Estado del técnico"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_estados.php"
+                        apiUrl={`${API_URL}/consultar_estados.php`}
                     />
 
                     <div className="form-group">

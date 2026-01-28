@@ -1,4 +1,5 @@
 import { useGlobal } from "../context/ContenedorGlobal";
+import API_URL from "../config";
 import { permisosMap } from "../data/permisosMap";
 import SelectorDeModulos from "./SelectorDeModulos";
 import "../styles/Sidebar.css";
@@ -33,7 +34,7 @@ function Sidebar() {
     // Bloque para cerrar la sesión 
     const handleLogout = async () => {
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/logout.php", {
+            const response = await fetch(`${API_URL}/logout.php`, {
                 method: "POST",
                 credentials: "include"   // Se envía la cookie PHPSESSID a la api
             });

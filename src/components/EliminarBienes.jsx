@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
@@ -14,7 +15,7 @@ function EliminarBienes() {
     // Cuando de viene desde ConsultarBienes.jsx y ya hay bienSeleccionado se carga directo
     useEffect(() => {
         if (bienSeleccionado) {
-            fetch("http://localhost/sigbi_712/api/consulta_20.php", {
+            fetch(`${API_URL}/consulta_20.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -40,7 +41,7 @@ function EliminarBienes() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consulta_20.php", {
+            const response = await fetch(`${API_URL}/consulta_20.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -68,7 +69,7 @@ function EliminarBienes() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/eliminar_bienes.php", {
+            const response = await fetch(`${API_URL}/eliminar_bienes.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

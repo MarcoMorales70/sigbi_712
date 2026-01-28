@@ -1,4 +1,5 @@
 import { useState } from "react";
+import API_URL from "../config";
 import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import { obtenerModulosDesdePermisos } from "../data/permisosUtils";
@@ -23,7 +24,7 @@ function IniciarSesion() {
 
         try {
             // Petición POST al backend 
-            const response = await fetch("http://localhost/sigbi_712/api/login.php", {
+            const response = await fetch(`${API_URL}/login.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id_tecnico: idTecnico, contrasena }),

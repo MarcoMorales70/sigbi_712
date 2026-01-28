@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import Hardware from "./Hardware";
 import InputGenerico from "./InputGenerico";
@@ -22,7 +23,7 @@ function ModificarBajas() {
 
     // Efecto secundario del paso 1, consultar bajas registradas
     useEffect(() => {
-        fetch("http://localhost/sigbi_712/api/consultar_bajas.php", { credentials: "include" })
+        fetch(`${API_URL}/consultar_bajas.php`, { credentials: "include" })
             .then(res => res.json())
             .then(data => {
                 if (data.status === "ok") {
@@ -43,7 +44,7 @@ function ModificarBajas() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consulta_23.php", {
+            const response = await fetch(`${API_URL}/consulta_23.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -85,7 +86,7 @@ function ModificarBajas() {
         setLoading(true);
 
         try { // Se reactiva el bien de la baja eliminada
-            const response = await fetch("http://localhost/sigbi_712/api/reactivar_bienes.php", {
+            const response = await fetch(`${API_URL}/reactivar_bienes.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

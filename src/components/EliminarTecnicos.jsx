@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
@@ -14,7 +15,7 @@ function EliminarTecnicos() {
     // Mecánica, Si viene desde ConsultarTecnicos.jsx y ya hay tecnicoSeleccionado va a cargar directo
     useEffect(() => {
         if (tecnicoSeleccionado) {
-            fetch("http://localhost/sigbi_712/api/consulta_9.php", {
+            fetch(`${API_URL}/consulta_9.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -40,7 +41,7 @@ function EliminarTecnicos() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consulta_9.php", {
+            const response = await fetch(`${API_URL}/consulta_9.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -68,7 +69,7 @@ function EliminarTecnicos() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/eliminar_tecnicos.php", {
+            const response = await fetch(`${API_URL}/eliminar_tecnicos.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 
@@ -12,7 +13,7 @@ function ConsultarBienes() {
 
     useEffect(() => {
         if (tienePermisoConsultar) {
-            fetch("http://localhost/sigbi_712/api/consulta_18.php", {
+            fetch(`${API_URL}/consulta_18.php`, {
                 credentials: "include"
             })
                 .then(res => res.json())
@@ -48,7 +49,7 @@ function ConsultarBienes() {
             } else {
                 // Exportar solo el bien seleccionado
                 const response = await fetch(
-                    `http://localhost/sigbi_712/api/consulta_18_1.php?serie_bien=${encodeURIComponent(seleccionado)}`,
+                    `${API_URL}/consulta_18_1.php?serie_bien=${encodeURIComponent(seleccionado)}`,
                     { credentials: "include" }
                 );
                 const data = await response.json();

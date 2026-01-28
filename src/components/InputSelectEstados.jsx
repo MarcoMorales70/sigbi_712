@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
+import API_URL from "../config";
+
 
 function InputSelectEstados({
     idEstado,
@@ -7,8 +9,10 @@ function InputSelectEstados({
     idEntidad,
     label = "Estado",
     readOnly = false,
-    apiUrl = "http://localhost/sigbi_712/api/consultar_estados.php"
+    apiUrl
 }) {
+    const url = apiUrl || `${API_URL}/consultar_estados.php`;
+
     const [estados, setEstados] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
@@ -31,7 +35,7 @@ function InputSelectEstados({
             })
             .catch(() => setError("\u26A0 Error de conexión al cargar estados."))
             .finally(() => setLoading(false));
-    }, [apiUrl]);
+    }, [url]);
 
     // Filtrar estados por entidad
     const estadosFiltrados = useMemo(() => {

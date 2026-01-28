@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputSelectIp from "./InputSelectIp";
@@ -38,7 +39,7 @@ function ModificarBienes() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consultar_bien_especifico.php", {
+            const response = await fetch(`${API_URL}/consultar_bien_especifico.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -66,7 +67,7 @@ function ModificarBienes() {
     // Cargar bien automáticamente si viene desde ConsultarBienes.jsx
     useEffect(() => {
         if (bienSeleccionado) {
-            fetch("http://localhost/sigbi_712/api/consultar_bien_especifico.php", {
+            fetch(`${API_URL}/consultar_bien_especifico.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -115,7 +116,7 @@ function ModificarBienes() {
                 id_permiso: 19
             };
 
-            const response = await fetch("http://localhost/sigbi_712/api/modificar_bienes.php", {
+            const response = await fetch(`${API_URL}/modificar_bienes.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -199,7 +200,7 @@ function ModificarBienes() {
                         idSeleccionado={datosBien.id_tipo}
                         setIdSeleccionado={(value) => setDatosBien({ ...datosBien, id_tipo: value })}
                         label="Tipo de bien"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_tipo_bienes.php"
+                        apiUrl={`${API_URL}/consultar_tipo_bienes.php`}
                         valueField="id_tipo"
                         displayField="tipo_bien"
                         showDefaultOption={true}
@@ -240,7 +241,7 @@ function ModificarBienes() {
                         idSeleccionado={datosBien.id_resg}
                         setIdSeleccionado={(val) => setDatosBien({ ...datosBien, id_resg: val })}
                         label="Resguardante"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_usuarios.php"
+                        apiUrl={`${API_URL}/consultar_usuarios.php`}
                         valueField="id_usuario"
                         displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
                         showDefaultOption={true}
@@ -251,7 +252,7 @@ function ModificarBienes() {
                         idSeleccionado={datosBien.id_uso}
                         setIdSeleccionado={(val) => setDatosBien({ ...datosBien, id_uso: val })}
                         label="Operador"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_usuarios.php"
+                        apiUrl={`${API_URL}/consultar_usuarios.php`}
                         valueField="id_usuario"
                         displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
                         showDefaultOption={true}
@@ -264,7 +265,7 @@ function ModificarBienes() {
                         estadoActualText={datosBien.estado_actual}
                         idEntidad={1}
                         label="Estado del bien"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_estados.php"
+                        apiUrl={`${API_URL}/consultar_estados.php`}
                     />
 
                     {/* Condición para aprovechar recursos IP */}
@@ -281,7 +282,7 @@ function ModificarBienes() {
                         idSeleccionado={datosBien.id_propietario}
                         setIdSeleccionado={(value) => setDatosBien({ ...datosBien, id_propietario: value })}
                         label="Propietario"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_propietarios.php"
+                        apiUrl={`${API_URL}/consultar_propietarios.php`}
                         valueField="id_propietario"
                         displayField="propietario"
                         showDefaultOption={true}

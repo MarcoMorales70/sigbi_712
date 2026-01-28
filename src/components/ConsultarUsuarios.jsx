@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../config";
 import ModificarUsuarios from "./ModificarUsuarios";
 import EliminarUsuarios from "./EliminarUsuarios";
 import InputGenerico from "./InputGenerico";
@@ -32,7 +33,7 @@ function ConsultarUsuarios() {
         };
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consulta_27.php", {
+            const response = await fetch(`${API_URL}/consulta_27.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -78,7 +79,7 @@ function ConsultarUsuarios() {
                 ]);
             } else {
                 // Exportar solo el usuario seleccionado con datos enriquecidos
-                const response = await fetch(`http://localhost/sigbi_712/api/consulta_27.php`, {
+                const response = await fetch(`${API_URL}/consulta_27.php`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",
@@ -173,7 +174,7 @@ function ConsultarUsuarios() {
                     idSeleccionado={idCargo}
                     setIdSeleccionado={setIdCargo}
                     label="Cargo"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_cargos.php"
+                    apiUrl={`${API_URL}/consultar_cargos.php`}
                     valueField="id_cargo"
                     displayField="cargo"
                     readOnly={false}
@@ -187,7 +188,7 @@ function ConsultarUsuarios() {
                     idSeleccionado={idDireccion}
                     setIdSeleccionado={setIdDireccion}
                     label="Dirección Administrativa"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_direcciones.php"
+                    apiUrl={`${API_URL}/consultar_direcciones.php`}
                     valueField="id_direccion"
                     displayField="direccion_a"
                     readOnly={false}
@@ -202,7 +203,7 @@ function ConsultarUsuarios() {
                         idSeleccionado={idSede}
                         setIdSeleccionado={setIdSede}
                         label="Sede"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_sedes.php"
+                        apiUrl={`${API_URL}/consultar_sedes.php`}
                         valueField="id_sede"
                         displayField="acronimo"
                         readOnly={false}
@@ -214,7 +215,7 @@ function ConsultarUsuarios() {
                         idSeleccionado={idEdificio}
                         setIdSeleccionado={setIdEdificio}
                         label="Edificio"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_edificios.php"
+                        apiUrl={`${API_URL}/consultar_edificios.php`}
                         valueField="id_edificio"
                         displayField="edificio"
                         readOnly={false}
@@ -226,7 +227,7 @@ function ConsultarUsuarios() {
                         idSeleccionado={idNivel}
                         setIdSeleccionado={setIdNivel}
                         label="Nivel"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_niveles.php"
+                        apiUrl={`${API_URL}/consultar_niveles.php`}
                         valueField="id_nivel"
                         displayField="nivel"
                         readOnly={false}

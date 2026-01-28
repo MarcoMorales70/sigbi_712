@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
+import API_URL from "../config";
 
 function InputSelectIp({ idIp, setIdIp, ipActualText, label = "IP disponible" }) {
     const [ipsDisponibles, setIpsDisponibles] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost/sigbi_712/api/consultar_ips_disponibles.php", { credentials: "include" })
+        fetch(`${API_URL}/consultar_ips_disponibles.php`, { credentials: "include" })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {

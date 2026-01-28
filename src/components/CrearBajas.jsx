@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import InputGenerico from "./InputGenerico";
 import Hardware from "./Hardware";
@@ -25,7 +26,7 @@ function CrearBajas() {
     useEffect(() => {
         const fetchBienesEdo3 = async () => {
             try {
-                const res = await fetch("http://localhost/sigbi_712/api/consultar_bienes_estado3.php", {
+                const res = await fetch(`${API_URL}/consultar_bienes_estado3.php`, {
                     credentials: "include"
                 });
                 const data = await res.json();
@@ -85,7 +86,7 @@ function CrearBajas() {
         }
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/registrar_baja_paso1.php", {
+            const response = await fetch(`${API_URL}/registrar_baja_paso1.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -153,7 +154,7 @@ function CrearBajas() {
                 cant_bienes: parseInt(d.totalBienes, 10)
             }));
 
-            const response = await fetch("http://localhost/sigbi_712/api/registrar_baja_paso2.php", {
+            const response = await fetch(`${API_URL}/registrar_baja_paso2.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -187,7 +188,7 @@ function CrearBajas() {
     // Paso 3 cargar bienes y dictámenes
     const iniciarPaso3 = async () => {
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consultar_bienes_baja.php", {
+            const response = await fetch(`${API_URL}/consultar_bienes_baja.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -221,7 +222,7 @@ function CrearBajas() {
     const handleContinuarDictamen = async () => {
         const id_dictamen = dictamenesPaso3[dictamenActual].id_dictamen;
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/registrar_bienes_dictamen.php", {
+            const response = await fetch(`${API_URL}/registrar_bienes_dictamen.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

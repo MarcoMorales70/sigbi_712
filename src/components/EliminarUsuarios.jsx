@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import Hardware from "./Hardware";
@@ -26,7 +27,7 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
         setSuccess("");
         setLoading(true);
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/consultar_usuario_especifico.php", {
+            const response = await fetch(`${API_URL}/consultar_usuario_especifico.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -62,7 +63,7 @@ function EliminarUsuarios({ idUsuarioSeleccionado }) {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/eliminar_usuarios.php", {
+            const response = await fetch(`${API_URL}/eliminar_usuarios.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

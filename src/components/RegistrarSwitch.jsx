@@ -1,4 +1,5 @@
 import { useGlobal } from "../context/ContenedorGlobal";
+import API_URL from "../config";
 import { useState } from "react";
 import "../styles/Formularios.css";
 import InputPuertos from "./InputPuertos";
@@ -31,7 +32,7 @@ function RegistrarSwitches() {
 
         // Envio de datos para crear la tabla y registrar el switch
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/registrar_switch.php", {
+            const response = await fetch(`${API_URL}/registrar_switch.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -125,7 +126,7 @@ function RegistrarSwitches() {
                     idSeleccionado={idSede}
                     setIdSeleccionado={setIdSede}
                     label="Sede"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_sedes.php"
+                    apiUrl={`${API_URL}/consultar_sedes.php`}
                     valueField="id_sede"
                     displayField="acronimo"
                     readOnly={false}
@@ -137,7 +138,7 @@ function RegistrarSwitches() {
                     idSeleccionado={idEdificio}
                     setIdSeleccionado={setIdEdificio}
                     label="Edificio"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_edificios.php"
+                    apiUrl={`${API_URL}/consultar_edificios.php`}
                     valueField="id_edificio"
                     displayField="edificio"
                     readOnly={false}
@@ -149,7 +150,7 @@ function RegistrarSwitches() {
                     idSeleccionado={idNivel}
                     setIdSeleccionado={setIdNivel}
                     label="Nivel"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_niveles.php"
+                    apiUrl={`${API_URL}/consultar_niveles.php`}
                     valueField="id_nivel"
                     displayField="nivel"
                     readOnly={false}

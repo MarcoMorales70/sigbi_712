@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import Hardware from "./Hardware";
@@ -18,7 +19,7 @@ function ConsultarBajas() {
 
     useEffect(() => {
         if (tienePermisoConsultar) {
-            fetch("http://localhost/sigbi_712/api/consultar_bajas.php", {
+            fetch(`${API_URL}/consultar_bajas.php`, {
                 credentials: "include"
             })
                 .then(res => res.json())

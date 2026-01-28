@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 
@@ -13,7 +14,7 @@ function ConsultarTecnicos() {
     // Efecto secundario para validar que el tiene permiso
     useEffect(() => {
         if (tienePermisoConsultar) {
-            fetch("http://localhost/sigbi_712/api/consultar_tecnicos.php", {
+            fetch(`${API_URL}/consultar_tecnicos.php`, {
                 credentials: "include"
             })
                 .then(res => res.json())
@@ -45,7 +46,7 @@ function ConsultarTecnicos() {
                 rows = tecnicos.map(t => [t.id_tecnico, t.rol, t.nombre_completo]);
             } else {
                 // Exportar solo el técnico seleccionado con datos enriquecidos con otras tablas (más detalaldo)
-                const response = await fetch(`http://localhost/sigbi_712/api/consulta_6.php?id_tecnico=${seleccionado}`, {
+                const response = await fetch(`${API_URL}/consulta_6.php?id_tecnico=${seleccionado}`, {
                     credentials: "include"
                 });
                 const data = await response.json();

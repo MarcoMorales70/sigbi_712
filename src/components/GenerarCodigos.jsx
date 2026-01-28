@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
@@ -18,7 +19,7 @@ function GenerarCodigos() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/generar_codigos.php", {
+            const response = await fetch(`${API_URL}/generar_codigos.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

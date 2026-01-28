@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../config";
 import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
 import InputGenerico from "./InputGenerico";
@@ -31,7 +32,7 @@ function RegistrarTecnicos() {
         }
 
         try {
-            const response = await fetch("http://localhost/sigbi_712/api/registrar_tecnicos.php", {
+            const response = await fetch(`${API_URL}/registrar_tecnicos.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -92,7 +93,7 @@ function RegistrarTecnicos() {
                     idSeleccionado={idRol}
                     setIdSeleccionado={setIdRol}
                     label="Rol"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_roles.php"
+                    apiUrl={`${API_URL}/consultar_roles.php`}
                     valueField="id_rol"
                     displayField="rol"
                     showDefaultOption={true}

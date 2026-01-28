@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import API_URL from "../config";
 import { useGlobal } from "../context/ContenedorGlobal";
 import "../styles/Formularios.css";
 import InputGenerico from "./InputGenerico";
@@ -54,7 +55,7 @@ function RegistrarBienes() {
 
         setLoading(true);
         try {
-            const res = await fetch("http://localhost/sigbi_712/api/registrar_bienes.php", {
+            const res = await fetch(`${API_URL}/registrar_bienes.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -124,7 +125,7 @@ function RegistrarBienes() {
                     idSeleccionado={idTipo}
                     setIdSeleccionado={setIdTipo}
                     label="Tipo de bien"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_tipo_bienes.php"
+                    apiUrl={`${API_URL}/consultar_tipo_bienes.php`}
                     valueField="id_tipo"
                     displayField="tipo_bien"
                     readOnly={false}
@@ -166,7 +167,7 @@ function RegistrarBienes() {
                     idSeleccionado={idPropietario}
                     setIdSeleccionado={setIdPropietario}
                     label="Propietario"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_propietarios.php"
+                    apiUrl={`${API_URL}/consultar_propietarios.php`}
                     valueField="id_propietario"
                     displayField="propietario"
                     readOnly={false}
@@ -186,7 +187,7 @@ function RegistrarBienes() {
                     idSeleccionado={idResg}
                     setIdSeleccionado={setIdResg}
                     label="Resguardante"
-                    apiUrl="http://localhost/sigbi_712/api/consultar_usuarios.php"
+                    apiUrl={`${API_URL}/consultar_usuarios.php`}
                     valueField="id_usuario"
                     displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
                     readOnly={false}
@@ -211,7 +212,7 @@ function RegistrarBienes() {
                         idSeleccionado={idUso}
                         setIdSeleccionado={setIdUso}
                         label="Operador"
-                        apiUrl="http://localhost/sigbi_712/api/consultar_usuarios.php"
+                        apiUrl={`${API_URL}/consultar_usuarios.php`}
                         valueField="id_usuario"
                         displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
                         readOnly={false}
