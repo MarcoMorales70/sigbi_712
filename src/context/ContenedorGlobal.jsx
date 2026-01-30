@@ -40,7 +40,7 @@ export function ContenedorGlobalProvider({ children }) { // Permite la exportaci
         setTecnicoSeleccionado(null);
 
         if (nuevosPermisos.length > 0) { // Seleccionar módulo inicial dinámico
-            setModuloActual("Control");
+            setModuloActual(null);
         } else {
             setModuloActual("Autenticación");
         }

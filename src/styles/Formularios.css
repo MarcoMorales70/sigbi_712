@@ -322,3 +322,14 @@ input[type="radio"] {
     color: red;
     font-size: 0.8rem;
 }
+
+/* css para la vista de radiobotones en el componente ConsultarUsuarios.jsx*/
+/* Separación respecto a los radiobotones */
+.inputs-condicionales {
+    margin-top: 40px;
+}
+
+/* Separación entre cada input */
+.inputs-condicionales>* {
+    margin-bottom: 4px;
+}

@@ -36,10 +36,24 @@ $baja = trim($data["baja"] ?? "");
 $total_dictamenes = intval($data["total_dictamenes"] ?? 0);
 $total_bienes = intval($data["total_bienes"] ?? 0);
 
+// Validación, los campos no pueden estar vacios
 if ($baja === "" || $total_dictamenes <= 0 || $total_bienes <= 0) {
     echo json_encode([
         "status" => "error",
         "message" => "Todos los campos son obligatorios y deben ser válidos."
+    ]);
+    exit;
+}
+
+// Validación, la cantidad de dictamenes de una baja no puede ser mayor a los bienes susceptibles a baja
+$stmt = $pdo->query("SELECT COUNT(*) AS total FROM bienes WHERE id_estado = 3");
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+$bienes_edo3 = intval($row["total"]);
+
+if ($total_dictamenes > $bienes_edo3) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "El número de dictámenes no puede ser mayor que los bienes susceptibles a baja."
     ]);
     exit;
 }

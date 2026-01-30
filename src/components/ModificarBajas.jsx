@@ -30,6 +30,10 @@ function ModificarBajas() {
                     setBajas(data.bajas || []);
                 } else {
                     setError(data.message);
+                    setTimeout(() => {
+                        setModuloActual("hardware");
+                        setSubModuloActual(null);
+                    }, 3000);
                 }
             })
             .catch(() => setError("Error al cargar bajas."));
@@ -85,7 +89,7 @@ function ModificarBajas() {
         setSuccess("");
         setLoading(true);
 
-        try { // Se reactiva el bien de la baja eliminada
+        try { // Se elimina y etiqueta el bien de la baja eliminada
             const response = await fetch(`${API_URL}/reactivar_bienes.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -94,13 +98,13 @@ function ModificarBajas() {
             });
             const data = await response.json();
             if (data.status === "ok") {
-                setSuccess("\u2705 Bien reactivado correctamente.");
+                setSuccess("\u2705 Bien eliminado de la baja correctamente.");
                 setTimeout(() => {
                     setModuloActual("hardware");
                     setSubModuloActual(null);
                 }, 3000);
             } else {
-                setError(data.message || "Error al reactivar el bien.");
+                setError(data.message || "Error al eliminar el bien.");
             }
         } catch {
             setError("Error al conectar con el servidor.");

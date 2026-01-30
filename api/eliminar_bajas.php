@@ -71,7 +71,7 @@ try {
         $arraySerieBienBaja = array_merge($arraySerieBienBaja, $series);
     }
 
-    // Validar bienes con estado = 5
+    // Validar bienes con estado = 5 , que en el array enviado todos esten etiquetados como baja, de lo contrario no se pueden eliminar
     foreach ($arraySerieBienBaja as $serie) {
         $stmt = $pdo->prepare("SELECT id_estado FROM bienes WHERE serie_bien = ?");
         $stmt->execute([$serie]);
@@ -93,8 +93,9 @@ try {
         $stmt->execute([$id_dictamen]);
     }
 
+    // No se eliminar los bienes de la tabla "bienes" solo se les coloca un estado que para el cliente es identificativo
     foreach ($arraySerieBienBaja as $serie) {
-        $stmt = $pdo->prepare("DELETE FROM bienes WHERE serie_bien = ?");
+        $stmt = $pdo->prepare("UPDATE bienes SET id_estado = 22 WHERE serie_bien = ?");
         $stmt->execute([$serie]);
     }
 

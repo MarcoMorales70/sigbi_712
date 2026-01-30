@@ -19,6 +19,7 @@ function ConsultarUsuarios() {
     const [mensaje, setMensaje] = useState("");
     const [modoModificar, setModoModificar] = useState(false);
     const [modoEliminar, setModoEliminar] = useState(false);
+    const [vistaActual, setVistaActual] = useState("consulta");
 
     const handleConsultar = async () => {
         // Se crea un objeto payload para mandarlo en el fetch
@@ -44,6 +45,7 @@ function ConsultarUsuarios() {
             if (data.status === "ok") {
                 setResultados(data.resultados || []);
                 setMensaje("");
+                setVistaActual("resultados");
             } else {
                 setMensaje(data.message || "Error en la consulta.");
             }
@@ -112,14 +114,22 @@ function ConsultarUsuarios() {
                 }
             }
 
-            // Generar CSV, 
-            let csvContent = "\uFEFF";  // Caracter invisible, para evitar errores al arbrir el archivo y se utilice la codificación correcta
-            csvContent += headers.join(",") + "\r\n";
+            // Generar CSV
+            let csvContent = "\uFEFF";  // Caracter invisible para codificación correcta
+
+            // Encabezados con comillas
+            csvContent += headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(",") + "\r\n";
+
             rows.forEach(r => {
-                csvContent += r.join(",") + "\r\n";
+                const rowEscaped = r.map(field => {
+                    let value = String(field ?? "");
+                    value = value.replace(/"/g, '""');  // Escapar comillas dobles
+                    return `"${value}"`;    // Encerrar siempre entre comillas
+                });
+                csvContent += rowEscaped.join(",") + "\r\n";
             });
 
-            // Mecánica para crear un objeto Blob, que contiene los datos en un archivo csv y se pueda exportar
+            // Crear Blob y exportar
             const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -144,175 +154,219 @@ function ConsultarUsuarios() {
         return <EliminarUsuarios idUsuarioSeleccionado={seleccionado} />;
     }
 
+    if (vistaActual === "modificar" && seleccionado) {
+        return (
+            <ModificarUsuarios
+                idUsuarioSeleccionado={seleccionado}
+                onVolver={() => setVistaActual("resultados")}
+            />
+        );
+    }
+
+    if (vistaActual === "eliminar" && seleccionado) {
+        return (
+            <EliminarUsuarios
+                idUsuarioSeleccionado={seleccionado}
+                onVolver={() => setVistaActual("resultados")}
+            />
+        );
+    }
+
     return (
         <div className="sesion-form">
 
-            {/* Bloque de radio botones*/}
-            <div className="form-group">
-                <label><input type="radio" name="consulta" value="1" onChange={() => setConsultaElegida(1)} /> No. Empleado</label>
-                <label><input type="radio" name="consulta" value="2" onChange={() => setConsultaElegida(2)} /> Cargo</label>
-                <label><input type="radio" name="consulta" value="3" onChange={() => setConsultaElegida(3)} /> Dirección Administrativa</label>
-                <label><input type="radio" name="consulta" value="4" onChange={() => setConsultaElegida(4)} /> Sede</label>
-                <label><input type="radio" name="consulta" value="5" onChange={() => setConsultaElegida(5)} /> Todos los usuarios</label>
-            </div>
-
-            {/* Inputs condicionales de acuerdo a cada selección de radio botones*/}
-            {consultaElegida === 1 &&
-                <InputGenerico
-                    value={idUsuario}
-                    setValue={setIdUsuario}
-                    label="Número de empleado"
-                    maxLength={7}
-                    allowedChars="0-9"
-                    placeholder="7120000"
-                    title="Debe contener exactamente 7 dígitos numéricos"
-                />
-            }
-
-            {consultaElegida === 2 &&
-                <InputSelectGenerico
-                    idSeleccionado={idCargo}
-                    setIdSeleccionado={setIdCargo}
-                    label="Cargo"
-                    apiUrl={`${API_URL}/consultar_cargos.php`}
-                    valueField="id_cargo"
-                    displayField="cargo"
-                    readOnly={false}
-                    showDefaultOption={true}
-                    defaultOptionText="Seleccione un cargo"
-                />
-            }
-
-            {consultaElegida === 3 &&
-                <InputSelectGenerico
-                    idSeleccionado={idDireccion}
-                    setIdSeleccionado={setIdDireccion}
-                    label="Dirección Administrativa"
-                    apiUrl={`${API_URL}/consultar_direcciones.php`}
-                    valueField="id_direccion"
-                    displayField="direccion_a"
-                    readOnly={false}
-                    showDefaultOption={true}
-                    defaultOptionText="Seleccione Dirección Administrativa"
-                />
-            }
-
-            {consultaElegida === 4 && (
+            {/* Vista de consulta */}
+            {vistaActual === "consulta" && (
                 <>
-                    <InputSelectGenerico
-                        idSeleccionado={idSede}
-                        setIdSeleccionado={setIdSede}
-                        label="Sede"
-                        apiUrl={`${API_URL}/consultar_sedes.php`}
-                        valueField="id_sede"
-                        displayField="acronimo"
-                        readOnly={false}
-                        showDefaultOption={true}
-                        defaultOptionText="Seleccione una sede"
-                    />
+                    {/* Bloque de radio botones */}
+                    <div className="form-group">
+                        <label><input type="radio" name="consulta" value="1" onChange={() => setConsultaElegida(1)} /> No. Empleado</label>
+                        <label><input type="radio" name="consulta" value="2" onChange={() => setConsultaElegida(2)} /> Cargo</label>
+                        <label><input type="radio" name="consulta" value="3" onChange={() => setConsultaElegida(3)} /> Dirección Administrativa</label>
+                        <label><input type="radio" name="consulta" value="4" onChange={() => setConsultaElegida(4)} /> Sede</label>
+                        <label><input type="radio" name="consulta" value="5" onChange={() => setConsultaElegida(5)} /> Todos los usuarios</label>
+                    </div>
 
-                    <InputSelectGenerico
-                        idSeleccionado={idEdificio}
-                        setIdSeleccionado={setIdEdificio}
-                        label="Edificio"
-                        apiUrl={`${API_URL}/consultar_edificios.php`}
-                        valueField="id_edificio"
-                        displayField="edificio"
-                        readOnly={false}
-                        showDefaultOption={true}
-                        defaultOptionText="Seleccione un edificio"
-                    />
+                    {/* Inputs condicionales */}
+                    <div className="inputs-condicionales">
+                        {consultaElegida === 1 && (
+                            <InputGenerico
+                                value={idUsuario}
+                                setValue={setIdUsuario}
+                                label="Número de empleado"
+                                maxLength={7}
+                                allowedChars="0-9"
+                                placeholder="7120000"
+                                title="Debe contener exactamente 7 dígitos numéricos"
+                            />
+                        )}
 
-                    <InputSelectGenerico
-                        idSeleccionado={idNivel}
-                        setIdSeleccionado={setIdNivel}
-                        label="Nivel"
-                        apiUrl={`${API_URL}/consultar_niveles.php`}
-                        valueField="id_nivel"
-                        displayField="nivel"
-                        readOnly={false}
-                        showDefaultOption={true}
-                        defaultOptionText="Seleccione un piso o nivel"
-                    />
+                        {consultaElegida === 2 && (
+                            <InputSelectGenerico
+                                idSeleccionado={idCargo}
+                                setIdSeleccionado={setIdCargo}
+                                label="Cargo"
+                                apiUrl={`${API_URL}/consultar_cargos.php`}
+                                valueField="id_cargo"
+                                displayField="cargo"
+                                readOnly={false}
+                                showDefaultOption={true}
+                                defaultOptionText="Seleccione un cargo"
+                            />
+                        )}
+
+                        {consultaElegida === 3 && (
+                            <InputSelectGenerico
+                                idSeleccionado={idDireccion}
+                                setIdSeleccionado={setIdDireccion}
+                                label="Dirección Administrativa"
+                                apiUrl={`${API_URL}/consultar_direcciones.php`}
+                                valueField="id_direccion"
+                                displayField="direccion_a"
+                                readOnly={false}
+                                showDefaultOption={true}
+                                defaultOptionText="Seleccione Dirección Administrativa"
+                            />
+                        )}
+
+                        {consultaElegida === 4 && (
+                            <>
+                                <InputSelectGenerico
+                                    idSeleccionado={idSede}
+                                    setIdSeleccionado={setIdSede}
+                                    label="Sede"
+                                    apiUrl={`${API_URL}/consultar_sedes.php`}
+                                    valueField="id_sede"
+                                    displayField="acronimo"
+                                    readOnly={false}
+                                    showDefaultOption={true}
+                                    defaultOptionText="Seleccione una sede"
+                                />
+
+                                <InputSelectGenerico
+                                    idSeleccionado={idEdificio}
+                                    setIdSeleccionado={setIdEdificio}
+                                    label="Edificio"
+                                    apiUrl={`${API_URL}/consultar_edificios.php`}
+                                    valueField="id_edificio"
+                                    displayField="edificio"
+                                    readOnly={false}
+                                    showDefaultOption={true}
+                                    defaultOptionText="Seleccione un edificio"
+                                />
+
+                                <InputSelectGenerico
+                                    idSeleccionado={idNivel}
+                                    setIdSeleccionado={setIdNivel}
+                                    label="Nivel"
+                                    apiUrl={`${API_URL}/consultar_niveles.php`}
+                                    valueField="id_nivel"
+                                    displayField="nivel"
+                                    readOnly={false}
+                                    showDefaultOption={true}
+                                    defaultOptionText="Seleccione un piso o nivel"
+                                />
+                            </>
+                        )}
+
+                        {/* Botón consultar */}
+                        <div className="form-buttons">
+                            <button type="button" onClick={handleConsultar}>Consultar</button>
+                        </div>
+
+                        {/* Mensajes */}
+                        {mensaje && <div className="error">{mensaje}</div>}
+                    </div>
                 </>
             )}
 
-            {/* Botón consultar */}
-            <div className="form-buttons">
-                <button type="button" onClick={handleConsultar}>Consultar</button>
-            </div>
-
-            {/* Mensajes */}
-            {mensaje && <div className="error">{mensaje}</div>}
-
-            {/* Resultados */}
-            {resultados.length > 0 && (
+            {/* Vista de resultados */}
+            {vistaActual === "resultados" && (
                 <>
-                    <table className="tabla-estandar seleccion-unica">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>ID Usuario</th>
-                                <th>Usuario</th>
-                                <th>A. Paterno</th>
-                                <th>A. Materno</th>
-                                <th>Correo</th>
-                                <th>Cargo</th>
-                                <th>Dirección</th>
-                                <th>Sede</th>
-                                <th>Edificio</th>
-                                <th>Nivel</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {resultados.map((r) => (
-                                <tr key={r.id_usuario}>
-                                    <td>
-                                        <input
-                                            type="checkbox"
-                                            checked={seleccionado === r.id_usuario}
-                                            onChange={() => setSeleccionado(seleccionado === r.id_usuario ? null : r.id_usuario)}
-                                        />
-                                    </td>
-                                    <td>{r.id_usuario}</td>
-                                    <td>{r.usuario}</td>
-                                    <td>{r.a_paterno}</td>
-                                    <td>{r.a_materno}</td>
-                                    <td>{r.correo}</td>
-                                    <td>{r.cargo}</td>
-                                    <td>{r.direccion_a}</td>
-                                    <td>{r.acronimo}</td>
-                                    <td>{r.edificio}</td>
-                                    <td>{r.nivel}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    {resultados.length > 0 ? (
+                        <>
+                            <table className="tabla-estandar seleccion-unica">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>ID Usuario</th>
+                                        <th>Usuario</th>
+                                        <th>A. Paterno</th>
+                                        <th>A. Materno</th>
+                                        <th>Correo</th>
+                                        <th>Cargo</th>
+                                        <th>Dirección</th>
+                                        <th>Sede</th>
+                                        <th>Edificio</th>
+                                        <th>Nivel</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {resultados.map((r) => (
+                                        <tr key={r.id_usuario}>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={seleccionado === r.id_usuario}
+                                                    onChange={() =>
+                                                        setSeleccionado(seleccionado === r.id_usuario ? null : r.id_usuario)
+                                                    }
+                                                />
+                                            </td>
+                                            <td>{r.id_usuario}</td>
+                                            <td>{r.usuario}</td>
+                                            <td>{r.a_paterno}</td>
+                                            <td>{r.a_materno}</td>
+                                            <td>{r.correo}</td>
+                                            <td>{r.cargo}</td>
+                                            <td>{r.direccion_a}</td>
+                                            <td>{r.acronimo}</td>
+                                            <td>{r.edificio}</td>
+                                            <td>{r.nivel}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
 
-                    {/* Botones globales debajo del listado */}
-                    <div className="acciones">
-                        <button
-                            type="button"
-                            onClick={() => setModoModificar(true)}
-                            disabled={!seleccionado}
-                        >
-                            Modificar
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setModoEliminar(true)}
-                            disabled={!seleccionado}
-                        >
-                            Eliminar
-                        </button>
-                        <button
-                            type="button"
-                            className="exportar"
-                            onClick={handleExportar}
-                        >
-                            Exportar
-                        </button>
-                    </div>
+                            {/* Botones globales */}
+                            <div className="acciones">
+                                <button
+                                    type="button"
+                                    onClick={() => setVistaActual("modificar")}
+                                    disabled={!seleccionado}
+                                >
+                                    Modificar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setVistaActual("eliminar")}
+                                    disabled={!seleccionado}
+                                >
+                                    Eliminar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="exportar"
+                                    onClick={handleExportar}
+                                >
+                                    Exportar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setVistaActual("consulta")}
+                                >
+                                    Nueva consulta
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div >
+                            <p>No se encontraron registros para la consulta.</p>
+                            <button type="button" onClick={() => setVistaActual("consulta")}>
+                                Volver a consultar
+                            </button>
+                        </div>
+                    )}
                 </>
             )}
         </div>

@@ -11,13 +11,13 @@ function Sidebar() {
     // Menú dinamico
     const menuDinamico = {};
 
-    permisos.forEach(idPermiso => {
+    permisos.forEach(idPermiso => { // Cada permiso se convierte en un objeto con información que traera de permisosMap
         const info = permisosMap[idPermiso];
         if (!info) return;
 
-        const { modulo, seccion, titulo } = info;
+        const { modulo, seccion, titulo } = info; // Se agrupa la información
 
-        if (!menuDinamico[modulo]) {
+        if (!menuDinamico[modulo]) {        // Se estructura la información dependiendo si las acciones pertenecen a una sección
             menuDinamico[modulo] = {};
         }
 
@@ -28,7 +28,7 @@ function Sidebar() {
         menuDinamico[modulo][seccion].push(titulo);
     });
 
-    // Obtener las secciones del módulo actual
+    // Obtener las secciones del módulo actual y en caso de no haber nada se usa {}, asi se evita error en tiempo de ejecución
     const secciones = menuDinamico[moduloActual] || {};
 
     // Bloque para cerrar la sesión 

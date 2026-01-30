@@ -51,7 +51,7 @@ import EliminarSwitch from "./EliminarSwitch";
 import RegistrarPatchP from "./RegistrarPatchP";
 import ConsultarPatchP from "./ConsultarPatchP";
 import ModificarPatchP from "./ModificarPatchP";
-import EliminarPatchP from "./EliminarPatchPanel";
+import EliminarPatchP from "./EliminarPatchP";
 
 import RastrearRed from "./RastrearRed";
 

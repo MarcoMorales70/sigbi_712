@@ -66,6 +66,12 @@ function CrearBajas() {
             return;
         }
 
+        if (Number(totalDictamenes) > Number(bienesEdo3)) {
+            setError("El número de dictámenes no puede ser mayor que los bienes susceptibles a baja.");
+            setLoading(false);
+            return;
+        }
+
         // Primero se convierte a número para realizar operaciones matemáticas
         const totalDictamenesInt = parseInt(totalDictamenes, 10);
         const totalBienesInt = parseInt(totalBienesGlobal, 10);
@@ -84,6 +90,8 @@ function CrearBajas() {
             setLoading(false);
             return;
         }
+
+
 
         try {
             const response = await fetch(`${API_URL}/registrar_baja_paso1.php`, {

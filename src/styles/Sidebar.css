@@ -1,8 +1,8 @@
 .sidebar {
-    width: 220px;
+    width: 240px;
     background: #f4f4f4;
     padding: 15px;
-    border-right: 1px solid #ddd;
+    border-right: 3px solid #651d32ff;
     display: flex;
     flex-direction: column;
 }
@@ -33,12 +33,13 @@
     font-weight: bold;
 }
 
-/* version activa: secciones y submenús */
+/* Secciones y submenús */
 .sidebar-submenu {
     display: none;
+
     margin-left: 15px;
     padding-left: 10px;
-    border-left: 2px solid #ccc;
+    border-left: 3px solid #002f2a;
 }
 
 .sidebar-seccion:hover .sidebar-submenu {
@@ -52,12 +53,13 @@
 }
 
 .sidebar-subitem {
+    list-style: none;
     padding: 6px 10px;
     cursor: pointer;
 }
 
 .sidebar-subitem:hover {
-    background-color: #e0e0e0;
+    background-color: #e6d194;
 }
 
 /* Resaltar activo */
@@ -67,10 +69,10 @@
     color: white;
 }
 
-/* Footer con botón de cerrar sesión */
+/* Botón de cerrar sesión en el sidebar*/
 .sidebar-footer {
-    margin-top: 20px;
-    /* se adapta al contenido, no fuerza scroll */
+    margin-top: 60px;
+    /* Se adapta al contenido del menu, no fuerza a usar scroll en menús cortos*/
 }
 
 .logout-btn {
