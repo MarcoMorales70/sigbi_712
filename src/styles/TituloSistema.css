@@ -1,7 +1,9 @@
 .titulo-sistema {
     margin: 0px;
-    color: #ffffff;
+    color: #651d32ff;
     font-size: 40px;
     font-weight: bold;
     font-family: 'Inter', sans-serif;
+    padding-left: 30px;
+    padding-right: 30px;
 }

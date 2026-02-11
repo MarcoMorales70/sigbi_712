@@ -2,7 +2,7 @@
     background-color: #FFFFFF;
     color: #651d32ff;
     display: grid;
-    grid-template-columns: auto auto 2fr;
+    grid-template-columns: auto auto auto;
     align-items: center;
     gap: 10px;
     padding: 8px;

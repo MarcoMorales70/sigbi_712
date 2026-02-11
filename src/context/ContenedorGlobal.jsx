@@ -12,6 +12,7 @@ export function ContenedorGlobalProvider({ children }) { // Permite la exportaci
     const [subModuloActual, setSubModuloActual] = useState(null); // Estado de navegación, del submódulo, se arranca en null, porque aun no se selecciona ninguna acción.
     const [tecnicoSeleccionado, setTecnicoSeleccionado] = useState(null);   // Para pasar de un componente a otro.
     const [bienSeleccionado, setBienSeleccionado] = useState(null); // Para mantener el dato del bien entre componentes.
+    const [elementoSeleccionado, setElementoSeleccionado] = useState(null);
 
     // Función para cerrar sesión en backend y limpiar el estado en frontend
     const logout = async () => { // Se declara la función cerrar sesión como asíncrona
@@ -61,6 +62,8 @@ export function ContenedorGlobalProvider({ children }) { // Permite la exportaci
                 setBienSeleccionado,
                 tecnicoSeleccionado,
                 setTecnicoSeleccionado,
+                elementoSeleccionado,
+                setElementoSeleccionado,
                 logout,
                 login,
             }}

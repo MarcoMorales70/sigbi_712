@@ -1,4 +1,8 @@
 .nom-area {
-    font-size: 20px;
-    padding-left: 10px;
+    font-size: 25px;
+    padding-right: 10px;
+    padding-left: 30px;
+    font-weight: bold;
+    text-align: right;
+    margin: 0;
 }

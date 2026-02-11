@@ -12,7 +12,7 @@ function EliminarBienes() {
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Cuando de viene desde ConsultarBienes.jsx y ya hay bienSeleccionado se carga directo
+    // Cuando se viene desde ConsultarBienes.jsx y ya hay bienSeleccionado se carga directo
     useEffect(() => {
         if (bienSeleccionado) {
             fetch(`${API_URL}/consulta_20.php`, {

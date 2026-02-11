@@ -96,8 +96,9 @@ try {
     // Crear tabla dinámica
     $tableName = preg_replace('/[^a-p0-9_sw]/', '', $nom_switch); // Sanitizar con caracteres válidos
     $pdo->exec("CREATE TABLE `$tableName` (
+        id_puerto INT AUTO_INCREMENT PRIMARY KEY,
         puerto_sw VARCHAR(12),
-        estado VARCHAR(12),
+        id_estado INT,
         voz VARCHAR(2),
         datos VARCHAR(2),
         puerto_pp VARCHAR(12),
@@ -105,12 +106,12 @@ try {
     )");
 
     // Insertar valores iniciales
-    $stmtInsert = $pdo->prepare("INSERT INTO `$tableName` (puerto_sw, estado, voz, datos, puerto_pp, notas_puerto_sw)
+    $stmtInsert = $pdo->prepare("INSERT INTO `$tableName` (puerto_sw, id_estado, voz, datos, puerto_pp, notas_puerto_sw)
                                  VALUES (?, NULL, NULL, NULL, NULL, NULL)");
 
-    for ($i = $puertos; $i >= 1; $i--) {
-        $puertoName = $nom_switch . "_" . $i;
-        $stmtInsert->execute([$puertoName]);
+    for ($i = 1; $i <= $puertos; $i++) {
+      $puertoName = $nom_switch . "_" . $i;
+      $stmtInsert->execute([$puertoName]);
     }
 
     // Respuesta json

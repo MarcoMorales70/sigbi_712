@@ -33,7 +33,6 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 $patch   = trim($data["patch"] ?? "");
 $puertos      = (int)($data["puertos"] ?? 0);
-$nodos        = $puertos;
 $id_sede      = $data["idSede"] ?? "";
 $id_edificio  = $data["idEdificio"] ?? "";
 $id_nivel     = $data["idNivel"] ?? "";
@@ -76,28 +75,29 @@ try {
     }
 
     // Insertar en patch_panels
-    $stmt = $pdo->prepare("INSERT INTO patch_panels (patch, puertos, nodos, id_sede, id_edificio, id_nivel, desc_patch)
-                           VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$patch, $puertos, $nodos, $id_sede, $id_edificio, $id_nivel, $desc_patch]);
+    $stmt = $pdo->prepare("INSERT INTO patch_panels (patch, puertos, id_sede, id_edificio, id_nivel, desc_patch)
+                           VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$patch, $puertos, $id_sede, $id_edificio, $id_nivel, $desc_patch]);
 
     // Crear tabla dinámica
-    $tableName = preg_replace('/[^a-p0-9_sw]/', '', $patch); // Sanitizar con caracteres válidos
+    $tableName = preg_replace('/[^a-p0-9_sw]/', '', $patch); // Sanitizar con caracteres válidos y asignar el nombre de la tabla
     $pdo->exec("CREATE TABLE `$tableName` (
+        id_puerto INT AUTO_INCREMENT PRIMARY KEY,
         puerto_pp VARCHAR(12),
-        estado VARCHAR(12),
+        id_estado INT,
         puerto_sw VARCHAR(12),
         nodo int,
-        serie_bien VARCHAR(50)
+        serie_bien VARCHAR(50),
         notas_puerto_pp VARCHAR(255)
     )");
 
     // Insertar valores iniciales
-    $stmtInsert = $pdo->prepare("INSERT INTO `$tableName` (puerto_pp, estado, puerto_sw, nodo, serie_bien, notas_puerto_pp)
+    $stmtInsert = $pdo->prepare("INSERT INTO `$tableName` (puerto_pp, id_estado, puerto_sw, nodo, serie_bien, notas_puerto_pp)
                                  VALUES (?, NULL, NULL, NULL, NULL, NULL)");
 
-    for ($i = $puertos; $i >= 1; $i--) {
-        $puertoName = $patch . "_" . $i;
-        $stmtInsert->execute([$puertoName]);
+    for ($i = 1; $i <= $puertos; $i++) {
+      $puertoName = $patch . "_" . $i;
+      $stmtInsert->execute([$puertoName]);
     }
 
     // Respuesta json

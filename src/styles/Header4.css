@@ -1,4 +1,4 @@
-.header3 {
+.header4 {
     display: grid;
     grid-template-columns: 100px auto auto;
     align-items: center;
@@ -6,9 +6,9 @@
     background-color: #002f2a;
     color: #e6d194;
     padding: 8px;
-    border-bottom: 1px solid #e6d194;
+    border-bottom: 4px solid #651d32ff;
 }
 
-.header3 h2 {
+.header4 h2 {
     margin: 0;
 }

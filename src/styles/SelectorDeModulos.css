@@ -9,9 +9,9 @@
 
 .modulo-tag {
     padding: 4px 8px;
-    background: #e6d1945f;
+    background: #e6d19447;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
     user-select: none;
     transition: background-color 0.2s;

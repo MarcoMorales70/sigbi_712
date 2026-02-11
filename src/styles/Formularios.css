@@ -5,14 +5,15 @@
     border-radius: 12px;
     max-width: 1100px;
     /* Amplio para aprovechar pantalla */
-    margin: 40px auto;
+    margin: 5px auto;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     font-family: "Segoe UI", Roboto, sans-serif;
     transition: transform 0.2s ease;
 }
 
+/* Aumenta un 2% el tamaño cuando se pasa el mouse sobre en formulario */
 .sesion-form:hover {
-    transform: translateY(-2px);
+    transform: scale(1.02);
 }
 
 /* Formulario flexible */
@@ -44,11 +45,12 @@
     }
 }
 
+/* Para las etieuetas dentro del formulario */
 label {
     font-weight: 600;
     margin-bottom: 6px;
-    color: #333;
-    font-size: 0.95rem;
+    color: #651d32ff;
+    font-size: 1.1rem;
 }
 
 /* Inputs y selects unificados */
@@ -111,7 +113,7 @@ button:hover {
 /* Contenedor de tablas para aprovechar ancho */
 .tabla-contenedor {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -332,4 +334,137 @@ input[type="radio"] {
 /* Separación entre cada input */
 .inputs-condicionales>* {
     margin-bottom: 4px;
+}
+
+
+
+/* CSS para el modal de confirmación de eliminación */
+.sesion-form {
+    position: relative;
+    /* el overlay se posiciona relativo a este contenedor */
+}
+
+.confirmacion-overlay {
+    position: absolute;
+    /* se pega al contenedor padre */
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* ocupa todo el ancho del main */
+    height: 100%;
+    /* ocupa todo el alto del main */
+    background-color: rgba(0, 0, 0, 0.6);
+    /* sombra */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    /* encima del formulario */
+}
+
+.confirmacion-modal {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Contenedor de radiobotones y flujo del formulario */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f0e9e9;
+}
+
+/* Cada opción de radio */
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #651d32;
+    cursor: pointer;
+}
+
+/* Input genérico debajo de radios */
+.radio-group .input-generico {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Botón debajo del input */
+.radio-group button {
+    margin-top: 15px;
+    padding: 10px 16px;
+    background-color: #0078d7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.radio-group button:hover {
+    background-color: #005a9e;
+}
+
+/* Lista tipo árbol debajo del botón */
+.arbol {
+    margin-top: 20px;
+    padding-left: 20px;
+}
+
+.arbol ul {
+    list-style-type: none;
+    padding-left: 15px;
+}
+
+.arbol li {
+    margin: 6px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+
+
+
+
+/* Css para mostrar los datos de una solicitud */
+.ficha {
+    display: flex;
+    flex-direction: column;
+    /* cada fila en vertical */
+    gap: 8px;
+    /* espacio entre filas */
+    max-width: 500px;
+    /* opcional, controla ancho */
+}
+
+.fila {
+    display: flex;
+    justify-content: space-between;
+    /* etiqueta a la izquierda, valor a la derecha */
+    border-bottom: 1px solid #ddd;
+    /* separador opcional */
+    padding: 4px 0;
+}
+
+.label {
+    font-weight: bold;
+    color: #333;
+}
+
+.valor {
+    color: #555;
 }

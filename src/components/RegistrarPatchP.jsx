@@ -36,7 +36,7 @@ function RegistrarPatchP() {
                 credentials: "include",
                 body: JSON.stringify({
                     patch,
-                    puertos,
+                    puertos: Number(puertos),
                     idSede,
                     idEdificio,
                     idNivel,
@@ -57,13 +57,13 @@ function RegistrarPatchP() {
             } else {
                 setMensaje("\u274C " + (data.message || "Error al registrar el patch panel."));
             }
-        } catch {
-            setMensaje("Error de conexión con el servidor.");
+        } catch (err) {
+            setMensaje("Error de conexión con el servidor: " + err.message);
         }
     };
 
     if (!tienePermisoRegistrar) {
-        return <p>Acceso denegado. No tiene permiso para registrar switches.</p>;
+        return <p>Acceso denegado. No tiene permiso para registrar patch panels.</p>;
     }
 
     if (success) {
@@ -82,7 +82,7 @@ function RegistrarPatchP() {
         );
     }
 
-    // Captura de datos reutilizando otros componentes
+    // Captura de datos reutilizando componentes
     return (
         <div className="sesion-form">
             <form onSubmit={handleSubmit}>

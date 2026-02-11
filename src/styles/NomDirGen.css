@@ -1,5 +1,7 @@
 .nom-dir-gen {
     font-size: 18px;
     text-align: right;
+    font-weight: bold;
+    padding-left: 30px;
     padding-right: 10px;
 }

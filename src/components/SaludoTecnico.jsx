@@ -10,10 +10,11 @@ function SaludoTecnico() {
 
     // Se usa el nombre completo que ya devuelve login.php
     const nombreCompleto = identidad.nombre || "Técnico";
+    const rol = identidad.rol || "";
 
     return (
         <h3 className="saludo">
-            Bienvenido: {nombreCompleto}
+            {rol}: {nombreCompleto}
         </h3>
     );
 }

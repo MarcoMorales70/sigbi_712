@@ -40,7 +40,7 @@ function RegistrarSwitches() {
                     nomSwitch,
                     serieSw,
                     mac,
-                    puertos,
+                    puertos: Number(puertos),
                     idSede,
                     idEdificio,
                     idNivel,
@@ -82,7 +82,7 @@ function RegistrarSwitches() {
                 >
                     Continuar
                 </button>
-            </div>
+            </div >
         );
     }
 

@@ -46,11 +46,13 @@ import Red from "./Red";
 import RegistarSwitch from "./RegistrarSwitch";
 import ConsultarSwitch from "./ConsultarSwitch";
 import ModificarSwitch from "./ModificarSwitch";
+import ModificarPuertosSwitch from "./ModificarPuertosSwitch";
 import EliminarSwitch from "./EliminarSwitch";
 
 import RegistrarPatchP from "./RegistrarPatchP";
 import ConsultarPatchP from "./ConsultarPatchP";
 import ModificarPatchP from "./ModificarPatchP";
+import ModificarPuertosPatch from "./ModificarPuertosPatch";
 import EliminarPatchP from "./EliminarPatchP";
 
 import RastrearRed from "./RastrearRed";
@@ -248,6 +250,9 @@ function Main() {
         if (subModuloActual === "Modificar Switch") {
             return <div style={{ padding: "20px" }}><ModificarSwitch /></div>;
         }
+        if (subModuloActual === "Modificar Puertos Switch") {
+            return <div style={{ padding: "20px" }}><ModificarPuertosSwitch /></div>;
+        }
         if (subModuloActual === "Eliminar Switch") {
             return <div style={{ padding: "20px" }}><EliminarSwitch /></div>;
         }
@@ -262,12 +267,15 @@ function Main() {
         if (subModuloActual === "Modificar Patch Panel") {
             return <div style={{ padding: "20px" }}><ModificarPatchP /></div>;
         }
+        if (subModuloActual === "Modificar Puertos Patch") {
+            return <div style={{ padding: "20px" }}><ModificarPuertosPatch /></div>;
+        }
         if (subModuloActual === "Eliminar Patch Panel") {
             return <div style={{ padding: "20px" }}><EliminarPatchP /></div>;
         }
 
         // Sección Restrear Red por elemento
-        if (subModuloActual === "Restrear Red por Elemento") {
+        if (subModuloActual === "Rastrear Red") {
             return <div style={{ padding: "20px" }}><RastrearRed /></div>;
         }
 

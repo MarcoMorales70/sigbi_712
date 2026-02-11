@@ -1,8 +1,8 @@
 import '../styles/Layout.css';
-
 import '../styles/Header1.css';
 import '../styles/Header2.css';
 import '../styles/Header3.css';
+import '../styles/Header4.css';
 import '../styles/Main.css';
 
 import { useGlobal } from "../context/ContenedorGlobal";
@@ -26,22 +26,34 @@ function Layout({ children }) {
     return (
         <div className="layout">
 
-            {/* Encabezado */}
+            {/* Encabezado fraccionado */}
             <header>
-                <div className='header1'><TituloSistema /></div>
-
+                {/*
+                <div className='header1'>
+                    <TituloSistema />
+                </div>
+                */}
                 <div className='header2'>
                     <div><Logo /></div>
-                    <div><TituloModulo modulo={moduloActual} /></div>
+                    <div><TituloSistema /></div>
                     <div><NomDirGen /></div>
                 </div>
 
                 <div className='header3'>
-                    <div><NomArea /></div>
-                    <div><Actividad modulo={moduloActual} /></div>
+                    <div><h2 style={{ fontSize: "22px", fontWeight: "normal" }}>Módulo:</h2></div>
+                    <div><TituloModulo modulo={moduloActual} /></div>
                     <div><NomDirAdm /></div>
                 </div>
-                <div><SaludoTecnico /></div>
+
+                <div className='header4'>
+                    <div><h2 style={{ fontSize: "22px", fontWeight: "normal" }}>Actividad:</h2></div>
+                    <div><Actividad modulo={moduloActual} /></div>
+                    <div><NomArea /></div>
+                </div>
+
+                <div>
+                    <SaludoTecnico />
+                </div>
             </header>
 
             {/* El contenedor principal contiene el sidebar y el main*/}

@@ -45,17 +45,17 @@ export const permisosMap = {  // Exportar la constante para que pueda ser consum
     // RED (id_categoria = 6)
     30: { modulo: "Red", seccion: "Switches", titulo: "Registrar Switch" },
     31: { modulo: "Red", seccion: "Switches", titulo: "Consultar Switch" },
-    32: { modulo: "Red", seccion: "Switches", titulo: "Modificar Switch" },
-    33: { modulo: "Red", seccion: "Switches", titulo: "Modificar Puertos Switch" },
-    34: { modulo: "Red", seccion: "Switches", titulo: "Eliminar Switch" },
+    //32: { modulo: "Red", seccion: "Switches", titulo: "Modificar Switch" },
+    //33: { modulo: "Red", seccion: "Switches", titulo: "Modificar Puertos Switch" },
+    //34: { modulo: "Red", seccion: "Switches", titulo: "Eliminar Switch" },
 
     35: { modulo: "Red", seccion: "Patch Panel", titulo: "Registrar Patch Panel" },
     36: { modulo: "Red", seccion: "Patch Panel", titulo: "Consultar Patch Panel" },
-    37: { modulo: "Red", seccion: "Patch Panel", titulo: "Modificar Patch Panel" },
-    38: { modulo: "Red", seccion: "Patch Panel", titulo: "Modificar Puertos Patch Panel" },
-    39: { modulo: "Red", seccion: "Patch Panel", titulo: "Eliminar Patch Panel" },
+    //37: { modulo: "Red", seccion: "Patch Panel", titulo: "Modificar Patch Panel" },
+    //38: { modulo: "Red", seccion: "Patch Panel", titulo: "Modificar Puertos Patch" },
+    //39: { modulo: "Red", seccion: "Patch Panel", titulo: "Eliminar Patch Panel" },
 
-    40: { modulo: "Red", seccion: null, titulo: "Rastrear Red por Elemento" },
+    40: { modulo: "Red", seccion: null, titulo: "Rastrear Red" },
 
 
     // SOFTWARE (id_categoria = 7)

@@ -25,9 +25,12 @@ function RegistrarBienes() {
     const [idResg, setIdResg] = useState("");
     const [idUso, setIdUso] = useState("");
     const [sameUser, setSameUser] = useState(false);
+    const [mostrarBoton, setMostrarBoton] = useState(true);
+
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        setMostrarBoton(false);
         setError("");
         setSuccess("");
 
@@ -138,7 +141,7 @@ function RegistrarBienes() {
                     setValue={setMarca}
                     label="Marca"
                     maxLength={50}
-                    allowedChars="A-Z0-9/_\-"
+                    allowedChars="A-Z0-9/_\- "
                     transform="uppercase"
                     placeholder="HP"
                 />
@@ -148,7 +151,7 @@ function RegistrarBienes() {
                     setValue={setModelo}
                     label="Modelo"
                     maxLength={50}
-                    allowedChars="A-Z0-9/_\-"
+                    allowedChars="A-Z0-9/_\- "
                     transform="uppercase"
                     placeholder="PRODESK 700"
                 />
@@ -158,7 +161,7 @@ function RegistrarBienes() {
                     setValue={setVersion_soft}
                     label="Versión software"
                     maxLength={50}
-                    allowedChars="A-Z0-9/_\-"
+                    allowedChars="A-Z0-9/_\- "
                     transform="uppercase"
                     placeholder="WINDOWS 11"
                 />
@@ -189,7 +192,7 @@ function RegistrarBienes() {
                     label="Resguardante"
                     apiUrl={`${API_URL}/consultar_usuarios.php`}
                     valueField="id_usuario"
-                    displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
+                    displayField={(o) => `${o.a_paterno}  ${o.a_materno}  ${o.usuario}`}
                     readOnly={false}
                     showDefaultOption={true}
                     defaultOptionText="Seleccione usuario resguardante"
@@ -207,14 +210,13 @@ function RegistrarBienes() {
                 </div>
 
                 {!sameUser && (
-
                     <InputSelectGenerico
                         idSeleccionado={idUso}
                         setIdSeleccionado={setIdUso}
                         label="Operador"
                         apiUrl={`${API_URL}/consultar_usuarios.php`}
                         valueField="id_usuario"
-                        displayField={(o) => `${o.a_paterno} - ${o.a_materno} - ${o.usuario}`}
+                        displayField={(o) => `${o.a_paterno}  ${o.a_materno}  ${o.usuario}`}
                         readOnly={false}
                         showDefaultOption={true}
                         defaultOptionText="Seleccione usuario operador"
@@ -225,10 +227,13 @@ function RegistrarBienes() {
                 {success && <div className="success">{success}</div>}
 
                 <div className="form-buttons">
-                    <button className="btn" type="submit" disabled={loading}>
-                        {loading ? "Registrando..." : "Registrar"}
-                    </button>
+                    {mostrarBoton && (
+                        <button className="btn" type="submit" disabled={loading}>
+                            {loading ? "Registrando..." : "Registrar"}
+                        </button>
+                    )}
                 </div>
+
             </form>
         </div>
     );

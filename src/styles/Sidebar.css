@@ -1,10 +1,11 @@
 .sidebar {
-    width: 240px;
+    width: 260px;
     background: #f4f4f4;
     padding: 15px;
     border-right: 3px solid #651d32ff;
     display: flex;
     flex-direction: column;
+    font-size: 20px;
 }
 
 .sidebar-lista {
@@ -35,17 +36,18 @@
 
 /* Secciones y submenús */
 .sidebar-submenu {
-    display: none;
-
+    /*display: none; */
+    display: block;
     margin-left: 15px;
     padding-left: 10px;
-    border-left: 3px solid #002f2a;
+    border-left: 3px solid #651d32ff;
 }
 
+/*
 .sidebar-seccion:hover .sidebar-submenu {
     display: block;
 }
-
+*/
 .sidebar-seccion-titulo {
     font-weight: bold;
     padding: 8px;
@@ -71,7 +73,7 @@
 
 /* Botón de cerrar sesión en el sidebar*/
 .sidebar-footer {
-    margin-top: 60px;
+    margin-top: 100px;
     /* Se adapta al contenido del menu, no fuerza a usar scroll en menús cortos*/
 }
 
@@ -83,10 +85,11 @@
     border: none;
     border-radius: 6px;
     font-weight: 600;
+    font-size: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .logout-btn:hover {
-    background: #b71c1c;
+    background: #ff0101;
 }

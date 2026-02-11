@@ -1,6 +1,7 @@
 .titulo-modulo {
     font-size: 30px;
     font-weight: bold;
-    padding-left: 50px;
+    text-align: left;
+    padding-left: 10px;
     padding-right: 30px;
 }

@@ -1,15 +1,25 @@
+import React, { useState, useEffect } from "react";
+import API_URL from "../config";
+import "../styles/Formularios.css";
 import { useGlobal } from "../context/ContenedorGlobal";
+import InputGenerico from "./InputGenerico";
 
 function EliminarSwitch() {
+    // Estados iniciales (los puedes ajustar más tarde)
+    const [mensaje, setMensaje] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const { identidad, subModuloActual, setSubModuloActual, logout } = useGlobal();
+    // Hook global (aunque no lo uses aún)
+    const { setModuloActual, setSubModuloActual } = useGlobal();
+
+    useEffect(() => {
+        // Aquí irá la lógica de fetch o eliminación
+    }, []);
 
     return (
-        <div>
-            <p style={{ color: "red", fontSize: "24px", fontWeight: "bold" }}>
-                En construcción...
-            </p>
-            <p>Texto de prueba desde dentro del componente EliminarSwitch.jsx</p>
+        <div className="sesion-form">
+            <h2>Eliminar Switch</h2>
         </div>
     );
 }

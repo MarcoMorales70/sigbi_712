@@ -1,7 +1,11 @@
 .saludo {
     justify-content: left;
-    padding-left: 50px;
-    /*color: #651D32FF;*/
-    color: #002f2a;
-    font-size: 16px;
+    padding-left: 150px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #651D32FF;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+
 }
